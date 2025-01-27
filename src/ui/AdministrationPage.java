@@ -41,8 +41,8 @@ public class AdministrationPage extends VBox {
         TextField genreField = new TextField();
         genreField.setPromptText("Genre");
 
-        TextField idUniqueField = new TextField();
-        idUniqueField.setPromptText("Identifiant unique");
+        TextField numeroSecuField = new TextField();
+        numeroSecuField.setPromptText("Numéro de Sécurité Sociale");
 
         // Zone pour afficher les messages
         Label messageLabel = new Label();
@@ -50,17 +50,17 @@ public class AdministrationPage extends VBox {
         // Bouton de vérification
         Button verifierButton = new Button("Vérifier DMR");
         verifierButton.setOnAction(event -> {
-            String idUnique = idUniqueField.getText();
-            if (idUnique.isEmpty()) {
-                messageLabel.setText("Veuillez entrer un identifiant unique.");
+            String numeroSecu = numeroSecuField.getText();
+            if (numeroSecu.isEmpty()) {
+                messageLabel.setText("Veuillez entrer un numéro de sécurité sociale.");
                 return;
             }
 
-            boolean existe = administrateur.verifierDMRExiste(idUnique);
+            boolean existe = administrateur.verifierDMRExiste(numeroSecu);
             if (existe) {
-                messageLabel.setText("Le DMR existe déjà pour cet identifiant.");
+                messageLabel.setText("Un DMR existe déjà pour ce numéro de sécurité sociale.");
             } else {
-                messageLabel.setText("Le DMR n'existe pas. Vous pouvez le créer.");
+                messageLabel.setText("Aucun DMR trouvé pour ce numéro de sécurité sociale. Vous pouvez le créer.");
             }
         });
 
@@ -71,14 +71,14 @@ public class AdministrationPage extends VBox {
             String prenom = prenomField.getText();
             String dateNaissance = dateNaissanceField.getText();
             String genre = genreField.getText();
-            String idUnique = idUniqueField.getText();
+            String numeroSecu = numeroSecuField.getText();
 
-            if (nom.isEmpty() || prenom.isEmpty() || dateNaissance.isEmpty() || genre.isEmpty() || idUnique.isEmpty()) {
+            if (nom.isEmpty() || prenom.isEmpty() || dateNaissance.isEmpty() || genre.isEmpty() || numeroSecu.isEmpty()) {
                 messageLabel.setText("Tous les champs doivent être remplis pour créer un DMR.");
                 return;
             }
 
-            boolean success = administrateur.creerDMR(nom, prenom, dateNaissance, genre, idUnique);
+            boolean success = administrateur.creerDMR(nom, prenom, dateNaissance, genre, numeroSecu);
             if (success) {
                 messageLabel.setText("DMR créé avec succès !");
             } else {
@@ -87,10 +87,11 @@ public class AdministrationPage extends VBox {
         });
 
         // Disposition des éléments
-        HBox formBox = new HBox(10, nomField, prenomField, dateNaissanceField, genreField, idUniqueField);
+        HBox formBox = new HBox(10, nomField, prenomField, dateNaissanceField, genreField, numeroSecuField);
         HBox buttonsBox = new HBox(10, verifierButton, creerButton);
 
         dmrSection.getChildren().addAll(formBox, buttonsBox, messageLabel);
         return dmrSection;
     }
 }
+

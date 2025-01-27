@@ -22,84 +22,105 @@ import javafx.scene.layout.VBox;
  * @author valen
  */
 public class Administration extends Utilisateur {
-     private VBox root;
+
+    private VBox root;
 
     public Administration(String id, String Mot_de_passe) {
         super(id, Mot_de_passe, 2);
         this.root = new VBox();
         Label welcomeLabel = new Label("Bienvenue, " + this.getNom());
-        
         root.getChildren().add(welcomeLabel);
     }
 
-    public boolean verifierDMRExiste(String identifiantUnique) {
-        if (identifiantUnique == null) {
-            System.out.println("L'identifiant unique est obligatoire.");
+    public boolean verifierDMRExiste(String numeroSecu) {
+        if (numeroSecu == null || numeroSecu.isBlank()) {
+            System.out.println("Le numéro de sécurité sociale est obligatoire.");
             return false;
         }
 
         try {
-            String requeteVerif = "SELECT ID_DMR FROM DMR WHERE ID_DMR = ?";
+            String requeteVerif = "SELECT 1 FROM DMR WHERE N_SECU = ?";
             try (Connection connection = ConnexionDataBase.getConnection(); PreparedStatement stmtVerif = connection.prepareStatement(requeteVerif)) {
 
-                stmtVerif.setLong(1, Long.parseLong(identifiantUnique)); // Convertir en entier car ID_DMR est un NUMBER
+                stmtVerif.setString(1, numeroSecu); // Vérifie le numéro de sécurité sociale
                 try (ResultSet rs = stmtVerif.executeQuery()) {
-                    if (rs.next()) {
-                        System.out.println("Un DMR existe deja pour cet identifiant : " + rs.getLong("ID_DMR"));
-                        return true; // Le DMR existe
-                    } else {
-                        System.out.println("Aucun DMR trouve pour cet identifiant.");
-                        return false; // Le DMR n'existe pas
-                    }
+                    return rs.next(); // Retourne vrai si une ligne existe
                 }
             }
         } catch (SQLException e) {
             System.out.println("Erreur lors de la vérification du DMR : " + e.getMessage());
             return false;
-        } catch (NumberFormatException e) {
-            System.out.println("L'identifiant unique doit etre un nombre valide : " + e.getMessage());
-            return false;
         }
     }
 
-    public boolean creerDMR(String nom, String prenom, String dateNaissance, String genre, String identifiantUnique) {
-        // Vérification des champs obligatoires
-        if (nom == null || prenom == null || dateNaissance == null || genre == null || identifiantUnique == null) {
-            System.out.println("Tous les champs obligatoires doivent etre remplis.");
+    public boolean creerDMR(String nom, String prenom, String dateNaissance, String genre, String numeroSecu) {
+        // Validation des champs obligatoires
+        if (nom == null || nom.isBlank()
+                || prenom == null || prenom.isBlank()
+                || dateNaissance == null || dateNaissance.isBlank()
+                || genre == null || genre.isBlank()
+                || numeroSecu == null || numeroSecu.isBlank()) {
+            System.out.println("Tous les champs obligatoires doivent être remplis.");
             return false;
         }
-        if (!verifierDMRExiste(identifiantUnique)) { {
 
-            try {
-                // Créer un nouveau DMR
-                String requeteInsertDMR = "INSERT INTO ZARLIV.DMR (ID_DMR, NOM, PRENOM, DATE_NAISSANCE, GENRE, N_SECU) "
-                        + "VALUES (?, ?, ?, TO_DATE(?, 'YYYY-MM-DD'), ?, '123456789012345')";
+        // Validation du numéro de sécurité sociale
+        if (numeroSecu.length() != 15 || !numeroSecu.matches("\\d{15}")) {
+            System.out.println("Le numéro de sécurité sociale doit contenir exactement 15 chiffres.");
+            return false;
+        }
 
-                try (Connection connection = ConnexionDataBase.getConnection(); PreparedStatement stmtInsert = connection.prepareStatement(requeteInsertDMR)) {
+        // Validation de la date de naissance (format YYYY-MM-DD)
+        if (!dateNaissance.matches("\\d{4}-\\d{2}-\\d{2}")) {
+            System.out.println("La date de naissance doit être au format YYYY-MM-DD.");
+            return false;
+        }
 
-                    stmtInsert.setLong(1, Long.parseLong(identifiantUnique));
-                    stmtInsert.setString(2, nom);
-                    stmtInsert.setString(3, prenom);
-                    stmtInsert.setString(4, dateNaissance);
-                    stmtInsert.setString(5, genre);
+        if (verifierDMRExiste(numeroSecu)) {
+            System.out.println("Un DMR existe déjà pour ce numéro de sécurité sociale.");
+            return false;
+        }
 
-                    int lignesAffectees = stmtInsert.executeUpdate();
-                    if (lignesAffectees <= 0) {
-                        System.out.println("Echec de la création du DMR.");
-                        return false;
-                    }
+        try (Connection connection = ConnexionDataBase.getConnection()) {
+            connection.setAutoCommit(false); // Désactiver l'autocommit
+
+            // Récupérer le dernier ID_DMR pour générer le prochain
+            long prochainID = 1; // Par défaut, le premier ID sera 1
+            String requeteDernierID = "SELECT MAX(ID_DMR) AS dernier_id FROM DMR";
+
+            try (Statement stmtDernierID = connection.createStatement(); ResultSet rs = stmtDernierID.executeQuery(requeteDernierID)) {
+                if (rs.next()) {
+                    prochainID = rs.getLong("dernier_id") + 1; // Incrémente le dernier ID
                 }
-
-                System.out.println("DMR cree avec succes.");
-                return true;
-
-            } catch (SQLException e) {
-                System.out.println("Erreur lors de la création du DMR : " + e.getMessage());
-                return false;
-            } catch (NumberFormatException e) {
-                System.out.println("L'identifiant unique doit etre un nombre valide : " + e.getMessage());
-                return false;
             }
-        }}return false;}
 
+            // Insérer le nouveau DMR
+            String requeteInsertDMR = "INSERT INTO DMR (ID_DMR, NOM, PRENOM, DATE_NAISSANCE, GENRE, N_SECU) "
+                    + "VALUES (?, ?, ?, TO_DATE(?, 'YYYY-MM-DD'), ?, ?)";
+
+            try (PreparedStatement stmtInsert = connection.prepareStatement(requeteInsertDMR)) {
+                stmtInsert.setLong(1, prochainID);
+                stmtInsert.setString(2, nom);
+                stmtInsert.setString(3, prenom);
+                stmtInsert.setString(4, dateNaissance);
+                stmtInsert.setString(5, genre);
+                stmtInsert.setString(6, numeroSecu);
+
+                int lignesAffectees = stmtInsert.executeUpdate();
+                if (lignesAffectees <= 0) {
+                    connection.rollback(); // Annule la transaction si échec
+                    System.out.println("Échec de la création du DMR.");
+                    return false;
+                }
+            }
+
+            connection.commit(); // Valide explicitement la transaction
+            System.out.println("DMR créé avec succès.");
+            return true;
+
+        } catch (SQLException e) {
+            System.out.println("Erreur lors de la création du DMR : " + e.getMessage());
+            return false;
+        }
+    }
 }
