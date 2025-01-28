@@ -47,6 +47,10 @@ public class AdministrationPage extends VBox {
         // Zone pour afficher les messages
         Label messageLabel = new Label();
 
+        // Zone pour afficher les détails du DMR récupéré
+        Label dmrDetailsLabel = new Label();
+        dmrDetailsLabel.setWrapText(true); // Permet le retour à la ligne pour les longs textes
+
         // Bouton de vérification
         Button verifierButton = new Button("Vérifier DMR");
         verifierButton.setOnAction(event -> {
@@ -86,12 +90,36 @@ public class AdministrationPage extends VBox {
             }
         });
 
-        // Disposition des éléments
-        HBox formBox = new HBox(10, nomField, prenomField, dateNaissanceField, genreField, numeroSecuField);
-        HBox buttonsBox = new HBox(10, verifierButton, creerButton);
+        // Bouton de récupération
+        Button recupererButton = new Button("Récupérer DMR");
+        recupererButton.setOnAction(event -> {
+            String numeroSecu = numeroSecuField.getText();
+            if (numeroSecu.isEmpty()) {
+                messageLabel.setText("Veuillez entrer un numéro de sécurité sociale.");
+                return;
+            }
 
-        dmrSection.getChildren().addAll(formBox, buttonsBox, messageLabel);
+            Administration.DMRInfo dmrInfo = administrateur.recupererDMR(numeroSecu);
+            if (dmrInfo != null) {
+                messageLabel.setText("DMR récupéré avec succès !");
+                // Afficher les détails du DMR récupéré
+                dmrDetailsLabel.setText("DMR trouvé :\n"
+                        + "Nom : " + dmrInfo.getNom() + "\n"
+                        + "Prénom : " + dmrInfo.getPrenom() + "\n"
+                        + "Date de naissance : " + dmrInfo.getDateNaissance() + "\n"
+                        + "Genre : " + dmrInfo.getGenre() + "\n"
+                        + "Numéro de sécurité sociale : " + dmrInfo.getNumeroSecu());
+            } else {
+                messageLabel.setText("Aucun DMR trouvé pour ce numéro de sécurité sociale.");
+                dmrDetailsLabel.setText(""); // Effacer les détails précédents
+            }
+        });
+
+        // Disposition des éléments
+        HBox formBox = new HBox(10,numeroSecuField, nomField, prenomField, dateNaissanceField, genreField );
+        HBox buttonsBox = new HBox(10, verifierButton, creerButton, recupererButton);
+
+        dmrSection.getChildren().addAll(formBox, buttonsBox, messageLabel, dmrDetailsLabel);
         return dmrSection;
     }
 }
-

@@ -123,4 +123,78 @@ public class Administration extends Utilisateur {
             return false;
         }
     }
+
+    public DMRInfo recupererDMR(String numeroSecu) {
+        if (numeroSecu == null || numeroSecu.isBlank()) {
+            System.out.println("Le numéro de sécurité sociale est obligatoire.");
+            return null;
+        }
+
+        try (Connection connection = ConnexionDataBase.getConnection()) {
+            // Vérifier si le DMR existe
+            if (!verifierDMRExiste(numeroSecu)) {
+                System.out.println("Aucun DMR trouvé pour ce numéro de sécurité sociale.");
+                return null;
+            }
+
+            // Récupérer les informations du DMR
+            String requeteRecupDMR = "SELECT * FROM DMR WHERE N_SECU = ?";
+            try (PreparedStatement stmtRecup = connection.prepareStatement(requeteRecupDMR)) {
+                stmtRecup.setString(1, numeroSecu);
+                try (ResultSet rs = stmtRecup.executeQuery()) {
+                    if (rs.next()) {
+                        // Récupérer les informations du DMR
+                        String nom = rs.getString("NOM");
+                        String prenom = rs.getString("PRENOM");
+                        String dateNaissance = rs.getString("DATE_NAISSANCE");
+                        String genre = rs.getString("GENRE");
+
+                        // Retourner un objet contenant les informations du DMR
+                        return new DMRInfo(nom, prenom, dateNaissance, genre, numeroSecu);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Erreur lors de la récupération du DMR : " + e.getMessage());
+        }
+        return null;
+    }
+
+    // Classe interne pour stocker les informations du DMR
+    public static class DMRInfo {
+        private final String nom;
+        private final String prenom;
+        private final String dateNaissance;
+        private final String genre;
+        private final String numeroSecu;
+
+        public DMRInfo(String nom, String prenom, String dateNaissance, String genre, String numeroSecu) {
+            this.nom = nom;
+            this.prenom = prenom;
+            this.dateNaissance = dateNaissance;
+            this.genre = genre;
+            this.numeroSecu = numeroSecu;
+        }
+
+        public String getNom() {
+            return nom;
+        }
+
+        public String getPrenom() {
+            return prenom;
+        }
+
+        public String getDateNaissance() {
+            return dateNaissance;
+        }
+
+        public String getGenre() {
+            return genre;
+        }
+
+        public String getNumeroSecu() {
+            return numeroSecu;
+        }
+    }
 }
+
