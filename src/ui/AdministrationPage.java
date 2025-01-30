@@ -41,26 +41,30 @@ public class AdministrationPage extends VBox {
         TextField genreField = new TextField();
         genreField.setPromptText("Genre");
 
-        TextField idUniqueField = new TextField();
-        idUniqueField.setPromptText("Identifiant unique");
+        TextField numeroSecuField = new TextField();
+        numeroSecuField.setPromptText("Numéro de Sécurité Sociale");
 
         // Zone pour afficher les messages
         Label messageLabel = new Label();
 
+        // Zone pour afficher les détails du DMR récupéré
+        Label dmrDetailsLabel = new Label();
+        dmrDetailsLabel.setWrapText(true); // Permet le retour à la ligne pour les longs textes
+
         // Bouton de vérification
         Button verifierButton = new Button("Vérifier DMR");
         verifierButton.setOnAction(event -> {
-            String idUnique = idUniqueField.getText();
-            if (idUnique.isEmpty()) {
-                messageLabel.setText("Veuillez entrer un identifiant unique.");
+            String numeroSecu = numeroSecuField.getText();
+            if (numeroSecu.isEmpty()) {
+                messageLabel.setText("Veuillez entrer un numéro de sécurité sociale.");
                 return;
             }
 
-            boolean existe = administrateur.verifierDMRExiste(idUnique);
+            boolean existe = administrateur.verifierDMRExiste(numeroSecu);
             if (existe) {
-                messageLabel.setText("Le DMR existe déjà pour cet identifiant.");
+                messageLabel.setText("Un DMR existe déjà pour ce numéro de sécurité sociale.");
             } else {
-                messageLabel.setText("Le DMR n'existe pas. Vous pouvez le créer.");
+                messageLabel.setText("Aucun DMR trouvé pour ce numéro de sécurité sociale. Vous pouvez le créer.");
             }
         });
 
@@ -71,14 +75,14 @@ public class AdministrationPage extends VBox {
             String prenom = prenomField.getText();
             String dateNaissance = dateNaissanceField.getText();
             String genre = genreField.getText();
-            String idUnique = idUniqueField.getText();
+            String numeroSecu = numeroSecuField.getText();
 
-            if (nom.isEmpty() || prenom.isEmpty() || dateNaissance.isEmpty() || genre.isEmpty() || idUnique.isEmpty()) {
+            if (nom.isEmpty() || prenom.isEmpty() || dateNaissance.isEmpty() || genre.isEmpty() || numeroSecu.isEmpty()) {
                 messageLabel.setText("Tous les champs doivent être remplis pour créer un DMR.");
                 return;
             }
 
-            boolean success = administrateur.creerDMR(nom, prenom, dateNaissance, genre, idUnique);
+            boolean success = administrateur.creerDMR(nom, prenom, dateNaissance, genre, numeroSecu);
             if (success) {
                 messageLabel.setText("DMR créé avec succès !");
             } else {
@@ -86,11 +90,36 @@ public class AdministrationPage extends VBox {
             }
         });
 
-        // Disposition des éléments
-        HBox formBox = new HBox(10, nomField, prenomField, dateNaissanceField, genreField, idUniqueField);
-        HBox buttonsBox = new HBox(10, verifierButton, creerButton);
+        // Bouton de récupération
+        Button recupererButton = new Button("Récupérer DMR");
+        recupererButton.setOnAction(event -> {
+            String numeroSecu = numeroSecuField.getText();
+            if (numeroSecu.isEmpty()) {
+                messageLabel.setText("Veuillez entrer un numéro de sécurité sociale.");
+                return;
+            }
 
-        dmrSection.getChildren().addAll(formBox, buttonsBox, messageLabel);
+            Administration.DMRInfo dmrInfo = administrateur.recupererDMR(numeroSecu);
+            if (dmrInfo != null) {
+                messageLabel.setText("DMR récupéré avec succès !");
+                // Afficher les détails du DMR récupéré
+                dmrDetailsLabel.setText("DMR trouvé :\n"
+                        + "Nom : " + dmrInfo.getNom() + "\n"
+                        + "Prénom : " + dmrInfo.getPrenom() + "\n"
+                        + "Date de naissance : " + dmrInfo.getDateNaissance() + "\n"
+                        + "Genre : " + dmrInfo.getGenre() + "\n"
+                        + "Numéro de sécurité sociale : " + dmrInfo.getNumeroSecu());
+            } else {
+                messageLabel.setText("Aucun DMR trouvé pour ce numéro de sécurité sociale.");
+                dmrDetailsLabel.setText(""); // Effacer les détails précédents
+            }
+        });
+
+        // Disposition des éléments
+        HBox formBox = new HBox(10,numeroSecuField, nomField, prenomField, dateNaissanceField, genreField );
+        HBox buttonsBox = new HBox(10, verifierButton, creerButton, recupererButton);
+
+        dmrSection.getChildren().addAll(formBox, buttonsBox, messageLabel, dmrDetailsLabel);
         return dmrSection;
     }
 }
