@@ -189,7 +189,11 @@ public class Dmr {
                     if (rs.next()) {
                         // private String id_dmr;
                         String g = rs.getString("GENRE").trim().toUpperCase();
-                        Genre genre = g.equals("H") ? Genre.H : Genre.F;
+                        Genre genre = null;
+                        if(g.equals("H")){
+                            genre=Genre.H;}
+                         else {genre=Genre.F;}
+                        
 
                         // Récupérer les informations du DMR
                         String id_dmr = rs.getString("id_dmr");
