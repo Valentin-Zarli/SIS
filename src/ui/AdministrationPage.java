@@ -1,125 +1,109 @@
 package ui;
 
 import fc.Administration;
-import javafx.scene.control.*;
+import fc.Dmr;
+import fc.Genre;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
-import javafx.scene.layout.HBox;
+import javafx.stage.Stage;
 
 public class AdministrationPage extends VBox {
-    private final Administration administrateur;
 
-    public AdministrationPage(Administration administrateur) {
-        this.administrateur = administrateur;
+    private Administration admin;
+    private TextArea textAreaMessages;
 
-        // Configuration de la VBox
-        this.setSpacing(20);
-        this.setPrefSize(800, 600);
+    public AdministrationPage(Administration admin) {
+        this.admin = admin;
+        this.textAreaMessages = new TextArea();
+        textAreaMessages.setEditable(false);
+        textAreaMessages.setPrefHeight(100);
 
-        // Label de bienvenue
-        Label welcomeLabel = new Label("Bienvenue, Administrateur " + administrateur.getNom());
-        this.getChildren().add(welcomeLabel);
+        // Welcome message with the administrator's name
+        Label welcomeLabel = new Label("Bienvenue, " + admin.getNom());
+        welcomeLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
 
-        // Gestion des DMR
-        this.getChildren().add(createDMRManagementSection());
-    }
+        // Components for DMR verification
+        Label labelVerifDMR = new Label("Vérifier l'existence d'un DMR :");
+        TextField textFieldNumSecuVerif = new TextField();
+        textFieldNumSecuVerif.setPromptText("Entrez le numéro de sécurité sociale");
+        Button buttonVerifDMR = new Button("Vérifier");
 
-    private VBox createDMRManagementSection() {
-        VBox dmrSection = new VBox(10); // Espacement entre les éléments
-        Label sectionTitle = new Label("Gestion des DMR");
-        dmrSection.getChildren().add(sectionTitle);
+        // Components for DMR creation
+        Label labelCreerDMR = new Label("Créer un nouveau DMR :");
+        TextField textFieldNom = new TextField();
+        textFieldNom.setPromptText("Entrez le nom");
+        TextField textFieldPrenom = new TextField();
+        textFieldPrenom.setPromptText("Entrez le prénom");
+        TextField textFieldDateNaissance = new TextField();
+        textFieldDateNaissance.setPromptText("Entrez la date de naissance (YYYY-MM-DD)");
+        TextField textFieldGenre = new TextField();
+        textFieldGenre.setPromptText("Entrez le genre (H ou F)");
+        TextField textFieldNumSecuCreer = new TextField();
+        textFieldNumSecuCreer.setPromptText("Entrez le numéro de sécurité sociale");
+        Button buttonCreerDMR = new Button("Créer");
 
-        // Champs de formulaire
-        TextField nomField = new TextField();
-        nomField.setPromptText("Nom");
+        // Components for DMR search
+        Label labelRechercherDMR = new Label("Rechercher un DMR :");
+        TextField textFieldNumSecuRechercher = new TextField();
+        textFieldNumSecuRechercher.setPromptText("Entrez le numéro de sécurité sociale");
+        Button buttonRechercherDMR = new Button("Rechercher");
 
-        TextField prenomField = new TextField();
-        prenomField.setPromptText("Prénom");
+        // Layout
+        this.getChildren().addAll(
+                welcomeLabel,
+                labelVerifDMR, textFieldNumSecuVerif, buttonVerifDMR,
+                labelCreerDMR, textFieldNom, textFieldPrenom, textFieldDateNaissance,
+                textFieldGenre, textFieldNumSecuCreer, buttonCreerDMR,
+                labelRechercherDMR, textFieldNumSecuRechercher, buttonRechercherDMR,
+                textAreaMessages
+        );
 
-        TextField dateNaissanceField = new TextField();
-        dateNaissanceField.setPromptText("Date de naissance (YYYY-MM-DD)");
-
-        TextField genreField = new TextField();
-        genreField.setPromptText("Genre");
-
-        TextField numeroSecuField = new TextField();
-        numeroSecuField.setPromptText("Numéro de Sécurité Sociale");
-
-        // Zone pour afficher les messages
-        Label messageLabel = new Label();
-
-        // Zone pour afficher les détails du DMR récupéré
-        Label dmrDetailsLabel = new Label();
-        dmrDetailsLabel.setWrapText(true); // Permet le retour à la ligne pour les longs textes
-
-        // Bouton de vérification
-        Button verifierButton = new Button("Vérifier DMR");
-        verifierButton.setOnAction(event -> {
-            String numeroSecu = numeroSecuField.getText();
-            if (numeroSecu.isEmpty()) {
-                messageLabel.setText("Veuillez entrer un numéro de sécurité sociale.");
-                return;
-            }
-
-            boolean existe = administrateur.verifierDMRExiste(numeroSecu);
-            if (existe) {
-                messageLabel.setText("Un DMR existe déjà pour ce numéro de sécurité sociale.");
+        // Button actions
+        buttonVerifDMR.setOnAction(event -> {
+            String numSecu = textFieldNumSecuVerif.getText();
+            Dmr dmr = new Dmr(null, null, null, null, null, null);
+            if (dmr.verifierDMRExiste(numSecu)) {
+                textAreaMessages.appendText("Un DMR existe pour ce numéro de sécurité sociale.\n");
             } else {
-                messageLabel.setText("Aucun DMR trouvé pour ce numéro de sécurité sociale. Vous pouvez le créer.");
+                textAreaMessages.appendText("Aucun DMR trouvé pour ce numéro de sécurité sociale.\n");
             }
         });
 
-        // Bouton de création
-        Button creerButton = new Button("Créer DMR");
-        creerButton.setOnAction(event -> {
-            String nom = nomField.getText();
-            String prenom = prenomField.getText();
-            String dateNaissance = dateNaissanceField.getText();
-            String genre = genreField.getText();
-            String numeroSecu = numeroSecuField.getText();
+        buttonCreerDMR.setOnAction(event -> {
+            String nom = textFieldNom.getText();
+            String prenom = textFieldPrenom.getText();
+            String dateNaissance = textFieldDateNaissance.getText();
+            String genre = textFieldGenre.getText();
+            String numSecu = textFieldNumSecuCreer.getText();
 
-            if (nom.isEmpty() || prenom.isEmpty() || dateNaissance.isEmpty() || genre.isEmpty() || numeroSecu.isEmpty()) {
-                messageLabel.setText("Tous les champs doivent être remplis pour créer un DMR.");
-                return;
-            }
-
-            boolean success = administrateur.creerDMR(nom, prenom, dateNaissance, genre, numeroSecu);
-            if (success) {
-                messageLabel.setText("DMR créé avec succès !");
+            Dmr dmr = new Dmr(null, null, null, null, null, null);
+            if (dmr.creerDMR(nom, prenom, dateNaissance, genre, numSecu)) {
+                textAreaMessages.appendText("DMR créé avec succès.\n");
             } else {
-                messageLabel.setText("Échec de la création du DMR. Vérifiez les données ou l'existence.");
+                textAreaMessages.appendText("Échec de la création du DMR.\n");
             }
         });
 
-        // Bouton de récupération
-        Button recupererButton = new Button("Récupérer DMR");
-        recupererButton.setOnAction(event -> {
-            String numeroSecu = numeroSecuField.getText();
-            if (numeroSecu.isEmpty()) {
-                messageLabel.setText("Veuillez entrer un numéro de sécurité sociale.");
-                return;
-            }
+        buttonRechercherDMR.setOnAction(event -> {
+            String numSecu = textFieldNumSecuRechercher.getText();
+            Dmr dmr = new Dmr(null, null, null, null, null, null);
+            Dmr dmrTrouve = dmr.recupererDMR(numSecu);
 
-            Administration.DMRInfo dmrInfo = administrateur.recupererDMR(numeroSecu);
-            if (dmrInfo != null) {
-                messageLabel.setText("DMR récupéré avec succès !");
-                // Afficher les détails du DMR récupéré
-                dmrDetailsLabel.setText("DMR trouvé :\n"
-                        + "Nom : " + dmrInfo.getNom() + "\n"
-                        + "Prénom : " + dmrInfo.getPrenom() + "\n"
-                        + "Date de naissance : " + dmrInfo.getDateNaissance() + "\n"
-                        + "Genre : " + dmrInfo.getGenre() + "\n"
-                        + "Numéro de sécurité sociale : " + dmrInfo.getNumeroSecu());
+            if (dmrTrouve != null) {
+                textAreaMessages.appendText("DMR trouvé :\n");
+                textAreaMessages.appendText("ID DMR : " + dmrTrouve.getId_dmr() + "\n");
+                textAreaMessages.appendText("Nom : " + dmrTrouve.getNom() + "\n");
+                textAreaMessages.appendText("Prénom : " + dmrTrouve.getPrenom() + "\n");
+                textAreaMessages.appendText("Date de naissance : " + dmrTrouve.getDate_de_naissance() + "\n");
+                textAreaMessages.appendText("Genre : " + dmrTrouve.getGenre() + "\n");
+                textAreaMessages.appendText("Numéro de sécurité sociale : " + dmrTrouve.getN_secu() + "\n");
             } else {
-                messageLabel.setText("Aucun DMR trouvé pour ce numéro de sécurité sociale.");
-                dmrDetailsLabel.setText(""); // Effacer les détails précédents
+                textAreaMessages.appendText("Aucun DMR trouvé pour ce numéro de sécurité sociale.\n");
             }
         });
-
-        // Disposition des éléments
-        HBox formBox = new HBox(10,numeroSecuField, nomField, prenomField, dateNaissanceField, genreField );
-        HBox buttonsBox = new HBox(10, verifierButton, creerButton, recupererButton);
-
-        dmrSection.getChildren().addAll(formBox, buttonsBox, messageLabel, dmrDetailsLabel);
-        return dmrSection;
     }
 }
