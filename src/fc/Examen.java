@@ -46,7 +46,7 @@ public class Examen {
     }
 
     public boolean creerExamen(String numeroSecu, String Date_examen, String Compte_rendu) {
-        int n_imag = 0;
+        int Nom_Image = 0;
         String id_dmr = null;
 
         if (numeroSecu == null || numeroSecu.isBlank()
@@ -72,7 +72,8 @@ public class Examen {
             return false;
         }
 
-        String requeteId_DMR = "SELECT ID_DMR FROM DMR WHERE NUMERO_SECU = ?";
+        String requeteId_DMR = "SELECT ID_DMR FROM DMR WHERE N_SECU = ?";
+
         try (Connection connection = ConnexionDataBase.getConnection(); PreparedStatement stmt = connection.prepareStatement(requeteId_DMR)) {
             stmt.setString(1, numeroSecu);
             try (ResultSet rs = stmt.executeQuery()) {
@@ -92,14 +93,15 @@ public class Examen {
             connection.setAutoCommit(false); // Désactiver l'autocommit
 
             // Insérer le nouveau Examen
-            String requeteInsertExamen = "INSERT INTO Examen (ID_DMR, DATE_EXAMEN, N_IMAG, COMPTE_RENDU) "
-                    + "VALUES (?, TO_DATE(?, 'YYYY-MM-DD HH24:MI'), ?,?)";
+            String requeteInsertExamen = "INSERT INTO Examen (ID_DMR, DATE_EXAMEN, COMPTE_RENDU) "
+                    + "VALUES (?, TO_TIMESTAMP(?, 'YYYY-MM-DD HH24:MI'), ?)";
+
 
             try (PreparedStatement stmtInsert = connection.prepareStatement(requeteInsertExamen)) {
                 stmtInsert.setString(1, id_dmr);
                 stmtInsert.setString(2, Date_examen);
-                stmtInsert.setInt(3, n_imag);
-                stmtInsert.setString(4, Compte_rendu);
+                //stmtInsert.setInt(3, Nom_Image);
+                stmtInsert.setString(3, Compte_rendu);
 
                 int lignesAffectees = stmtInsert.executeUpdate();
                 if (lignesAffectees <= 0) {

@@ -4,14 +4,33 @@
  */
 package fc;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.sql.Connection;
+import java.io.*;
+import java.sql.*;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.Scanner;
+import javafx.scene.control.Label;
+import javafx.scene.layout.VBox;
+
 /**
+ *
  *
  * @author valen
  */
-public class Manipulateur extends Utilisateur{
-    
+public class Manipulateur extends Utilisateur {
+
+    private VBox root;
+
     public Manipulateur(String id, String Mot_de_passe) {
-        super(id, Mot_de_passe, 3);
+        super(id, Mot_de_passe, 2);
+        this.root = new VBox();
+        Label welcomeLabel = new Label("Bienvenue, " + this.getNom());
+        root.getChildren().add(welcomeLabel);
     }
+
     
 }

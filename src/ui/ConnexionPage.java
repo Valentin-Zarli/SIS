@@ -6,6 +6,8 @@ package ui;
 
 import fc.Administration;
 import fc.Connexion;
+import fc.Manipulateur;
+import fc.Radiologue;
 import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -48,40 +50,48 @@ public class ConnexionPage extends Application {
     } else {
         textAreaMessages.appendText("Connexion réussie\n");
 
-        switch (c.acces().getAcces()) {
-            case 1 -> {
-                pageExamen radP = new pageExamen(c.acces());
-                // Affiche ou ouvre la page pour le radiologue
-                textAreaMessages.appendText("Accès Radiologue\n");
-                Stage radStage = new Stage(); // Nouveau Stage pour l'admin
-                Scene radScene = new Scene(radP, 800, 600); // Crée une scène avec le contenu de AdministrationPage (qui est un conteneur de type Parent ici)
-                radStage.setScene(radScene);
-                radStage.setTitle("Page Administration");
-                radStage.show();
-            }
-            case 2 -> {
-                // Création de l'objet Administration avec l'accès
-                AdministrationPage admP = new AdministrationPage((Administration) c.acces());
+        Object acces = c.acces();
+        if (acces instanceof Administration) {
+            Administration admin = (Administration) acces;
+            AdministrationPage admP = new AdministrationPage(admin);
+            textAreaMessages.appendText("Accès Administration\n");
 
-                // Affiche ou ouvre la page pour l'administration
-                textAreaMessages.appendText("Accès Administration\n");
+            Stage adminStage = new Stage();
+            Scene adminScene = new Scene(admP, 800, 600);
+            adminStage.setScene(adminScene);
+            adminStage.setTitle("Page Administration");
+            adminStage.show();
 
-                Stage adminStage = new Stage(); // Nouveau Stage pour l'admin
-                Scene adminScene = new Scene(admP, 800, 600); // Crée une scène avec le contenu de AdministrationPage (qui est un conteneur de type Parent ici)
-                adminStage.setScene(adminScene);
-                adminStage.setTitle("Page Administration");
-                adminStage.show();
+            Stage currentStage = (Stage) buttonValider.getScene().getWindow();
+            currentStage.close();
+        } else if (acces instanceof Manipulateur) {
+            Manipulateur manip = (Manipulateur) acces;
+            ManipulateurPage manP = new ManipulateurPage(manip);
+            textAreaMessages.appendText("Accès Manipulateur\n");
 
-                // Optionnel : Fermer la page actuelle
-                Stage currentStage = (Stage) buttonValider.getScene().getWindow();
-                currentStage.close();
-            }
-            case 3 -> {
-                ManipulateurPage manipP = new ManipulateurPage(c.acces());
-                // Affiche ou ouvre la page pour le manipulateur
-                textAreaMessages.appendText("Accès Manipulateur\n");
-            }
-            default -> textAreaMessages.appendText("Accès non reconnu\n");
+            Stage manipStage = new Stage();
+            Scene manipScene = new Scene(manP, 800, 600);
+            manipStage.setScene(manipScene);
+            manipStage.setTitle("Page Manipulateur");
+            manipStage.show();
+
+            Stage currentStage = (Stage) buttonValider.getScene().getWindow();
+            currentStage.close();
+        } else if (acces instanceof Radiologue) {
+            Radiologue rad = (Radiologue) acces;
+            pageExamen radP = new pageExamen(rad);
+            textAreaMessages.appendText("Accès Radiologue\n");
+
+            Stage radStage = new Stage();
+            Scene radScene = new Scene(radP, 800, 600);
+            radStage.setScene(radScene);
+            radStage.setTitle("Page Radiologue");
+            radStage.show();
+
+            Stage currentStage = (Stage) buttonValider.getScene().getWindow();
+            currentStage.close();
+        } else {
+            textAreaMessages.appendText("Accès non reconnu\n");
         }
     }
 });
@@ -104,4 +114,3 @@ public class ConnexionPage extends Application {
         launch(args);
     }
 }
-
