@@ -70,6 +70,7 @@ public static String sqlRequete(String requete) {
             resultat += rset.getString(1);
           
         }
+        System.out.println("Resultat : " +resultat);
         
         return resultat;
     } catch (SQLException ex) {
