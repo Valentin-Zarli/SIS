@@ -14,4 +14,7 @@ public class Manipulateur extends Utilisateur{
         super(id, Mot_de_passe, 3);
     }
     
+    
+    
+    
 }

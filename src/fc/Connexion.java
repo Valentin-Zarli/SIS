@@ -31,6 +31,9 @@ public class Connexion {
                     + "FROM utilisateur "
                     + "WHERE numero_id="+id
                     + "  AND Mot_de_passe='"+password+"'";
+       
+       System.out.println("la   : " +ConnexionDataBase.sqlRequete(requete));
+       
        if(ConnexionDataBase.sqlRequete(requete).equals("Administration")){
            Administration u = new Administration(id,password);
            return u ;

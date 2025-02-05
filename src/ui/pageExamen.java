@@ -1,5 +1,6 @@
 package ui;
 
+import fc.Examen;
 import fc.Utilisateur;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -12,10 +13,10 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
 public class pageExamen extends VBox {
-    private final Utilisateur user;
+    private final Examen examen;
 
-    public pageExamen(Utilisateur user) {
-        this.user = user;
+    public pageExamen(Examen examen) {
+        this.examen = examen;
 
         // Configuration de la VBox
         this.setSpacing(20);
@@ -30,7 +31,7 @@ public class pageExamen extends VBox {
         // Section image
         VBox imageSection = new VBox();
         ImageView imageView = new ImageView();
-        afficherImage("src/jpg/abdomen/cor494-i569.jpg", imageView);
+        afficherImage(examen.getImage_path(), imageView);
         imageSection.getChildren().add(imageView);
 
         // Disposition des composants
