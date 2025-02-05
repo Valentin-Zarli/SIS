@@ -41,6 +41,18 @@ public class ConnexionDataBase {
         }
         return conn;
     }
+    
+    
+    public static boolean sqlUpdate(String requete) {
+    try (Connection conn = getConnection(); Statement stmt = conn.createStatement()) {
+        // Exécution de la requête de modification
+        int lignesAffectees = stmt.executeUpdate(requete);
+        return lignesAffectees > 0; // Retourne true si au moins une ligne a été affectée
+    } catch (SQLException ex) {
+        System.out.println("SQLException: " + ex.getMessage());
+        return false;
+    }
+}
 public static String sqlRequete(String requete) {
     Scanner sc = new Scanner(System.in); // Cette variable est définie mais jamais utilisée.
 

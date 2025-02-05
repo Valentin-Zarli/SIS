@@ -11,6 +11,9 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import java.sql.Date;
+import java.util.List;
+
 public class AdministrationPage extends VBox {
 
     private Administration admin;
@@ -48,6 +51,14 @@ public class AdministrationPage extends VBox {
 
         // Components for DMR search
         Label labelRechercherDMR = new Label("Rechercher un DMR :");
+        TextField textFieldIdDMR = new TextField();
+        textFieldIdDMR.setPromptText("Entrez l'ID DMR");
+        TextField textFieldNomRechercher = new TextField();
+        textFieldNomRechercher.setPromptText("Entrez le nom");
+        TextField textFieldPrenomRechercher = new TextField();
+        textFieldPrenomRechercher.setPromptText("Entrez le prénom");
+        TextField textFieldDateNaissanceRechercher = new TextField();
+        textFieldDateNaissanceRechercher.setPromptText("Entrez la date de naissance (YYYY-MM-DD)");
         TextField textFieldNumSecuRechercher = new TextField();
         textFieldNumSecuRechercher.setPromptText("Entrez le numéro de sécurité sociale");
         Button buttonRechercherDMR = new Button("Rechercher");
@@ -58,7 +69,8 @@ public class AdministrationPage extends VBox {
                 labelVerifDMR, textFieldNumSecuVerif, buttonVerifDMR,
                 labelCreerDMR, textFieldNom, textFieldPrenom, textFieldDateNaissance,
                 textFieldGenre, textFieldNumSecuCreer, buttonCreerDMR,
-                labelRechercherDMR, textFieldNumSecuRechercher, buttonRechercherDMR,
+                labelRechercherDMR, textFieldIdDMR, textFieldNomRechercher, textFieldPrenomRechercher,
+                textFieldDateNaissanceRechercher, textFieldNumSecuRechercher, buttonRechercherDMR,
                 textAreaMessages
         );
 
@@ -89,20 +101,33 @@ public class AdministrationPage extends VBox {
         });
 
         buttonRechercherDMR.setOnAction(event -> {
+            String idDMR = textFieldIdDMR.getText();
+            String nom = textFieldNomRechercher.getText();
+            String prenom = textFieldPrenomRechercher.getText();
+            String dateNaissance = textFieldDateNaissanceRechercher.getText();
             String numSecu = textFieldNumSecuRechercher.getText();
-            Dmr dmr = new Dmr(null, null, null, null, null, null);
-            Dmr dmrTrouve = dmr.recupererDMR(numSecu);
 
-            if (dmrTrouve != null) {
-                textAreaMessages.appendText("DMR trouvé :\n");
-                textAreaMessages.appendText("ID DMR : " + dmrTrouve.getId_dmr() + "\n");
-                textAreaMessages.appendText("Nom : " + dmrTrouve.getNom() + "\n");
-                textAreaMessages.appendText("Prénom : " + dmrTrouve.getPrenom() + "\n");
-                textAreaMessages.appendText("Date de naissance : " + dmrTrouve.getDate_de_naissance() + "\n");
-                textAreaMessages.appendText("Genre : " + dmrTrouve.getGenre() + "\n");
-                textAreaMessages.appendText("Numéro de sécurité sociale : " + dmrTrouve.getN_secu() + "\n");
+            Date date = null;
+            if (dateNaissance != null && !dateNaissance.isBlank()) {
+                date = Date.valueOf(dateNaissance);
+            }
+
+            Dmr dmr = new Dmr(null, null, null, null, null, null);
+            List<Dmr> dmrs = dmr.recupererDMR(idDMR, numSecu, nom, prenom, date);
+
+            if (!dmrs.isEmpty()) {
+                textAreaMessages.appendText("DMR(s) trouvé(s) :\n");
+                for (Dmr d : dmrs) {
+                    textAreaMessages.appendText("ID DMR : " + d.getId_dmr() + "\n");
+                    textAreaMessages.appendText("Nom : " + d.getNom() + "\n");
+                    textAreaMessages.appendText("Prénom : " + d.getPrenom() + "\n");
+                    textAreaMessages.appendText("Date de naissance : " + d.getDate_de_naissance() + "\n");
+                    textAreaMessages.appendText("Genre : " + d.getGenre() + "\n");
+                    textAreaMessages.appendText("Numéro de sécurité sociale : " + d.getN_secu() + "\n");
+                    textAreaMessages.appendText("-----------------------------\n");
+                }
             } else {
-                textAreaMessages.appendText("Aucun DMR trouvé pour ce numéro de sécurité sociale.\n");
+                textAreaMessages.appendText("Aucun DMR trouvé pour les critères spécifiés.\n");
             }
         });
     }

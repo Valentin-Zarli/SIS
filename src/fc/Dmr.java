@@ -4,6 +4,8 @@
  */
 package fc;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -15,6 +17,8 @@ import java.sql.Statement;
  *
  * @author valen
  */
+
+
 public class Dmr {
 
     private String id_dmr;
@@ -23,6 +27,16 @@ public class Dmr {
     private Date Date_de_naissance;
     private Genre genre;
     private String n_secu;
+    
+    public Dmr() {
+        
+        this.id_dmr = null;
+        this.nom = null;
+        this.prenom = null;
+        this.Date_de_naissance = null;
+        this.genre = null;
+        this.n_secu = null;
+    }
 
     public Dmr(String id_dmr, String nom, String prenom, Date Date_de_naissance, Genre genre, String n_secu) {
         this.id_dmr = id_dmr;
@@ -33,6 +47,7 @@ public class Dmr {
         this.n_secu = n_secu;
 
     }
+    
 
     /**
      * @return the id_dmr
@@ -82,19 +97,10 @@ public class Dmr {
             return false;
         }
 
-        try {
-            String requeteVerif = "SELECT 1 FROM DMR WHERE N_SECU = ?";
-            try (Connection connection = ConnexionDataBase.getConnection(); PreparedStatement stmtVerif = connection.prepareStatement(requeteVerif)) {
+        String requeteVerif = "SELECT 1 FROM DMR WHERE N_SECU = '" + numeroSecu + "'";
+        String resultat = ConnexionDataBase.sqlRequete(requeteVerif);
 
-                stmtVerif.setString(1, numeroSecu); // Vérifie le numéro de sécurité sociale
-                try (ResultSet rs = stmtVerif.executeQuery()) {
-                    return rs.next(); // Retourne vrai si une ligne existe
-                }
-            }
-        } catch (SQLException e) {
-            System.out.println("Erreur lors de la vérification du DMR : " + e.getMessage());
-            return false;
-        }
+        return resultat != null && !resultat.isEmpty();
     }
 
     public boolean creerDMR(String nom, String prenom, String dateNaissance, String genre, String numeroSecu) {
@@ -120,96 +126,84 @@ public class Dmr {
             return false;
         }
 
+        // Vérifier si un DMR existe déjà avec ce numéro de sécurité sociale
         if (verifierDMRExiste(numeroSecu)) {
             System.out.println("Un DMR existe déjà pour ce numéro de sécurité sociale.");
             return false;
         }
 
-        try (Connection connection = ConnexionDataBase.getConnection()) {
-            connection.setAutoCommit(false); // Désactiver l'autocommit
+        // Récupérer le dernier ID_DMR pour générer le prochain
+        String requeteDernierID = "SELECT MAX(ID_DMR) AS dernier_id FROM DMR";
+        String dernierID = ConnexionDataBase.sqlRequete(requeteDernierID);
+        long prochainID = dernierID != null && !dernierID.isEmpty() ? Long.parseLong(dernierID) + 1 : 1;
 
-            // Récupérer le dernier ID_DMR pour générer le prochain
-            long prochainID = 1; // Par défaut, le premier ID sera 1
-            String requeteDernierID = "SELECT MAX(ID_DMR) AS dernier_id FROM DMR";
+        // Insérer le nouveau DMR
+        String requeteInsertDMR = "INSERT INTO DMR (ID_DMR, NOM, PRENOM, DATE_NAISSANCE, GENRE, N_SECU) "
+                + "VALUES (" + prochainID + ", '" + nom + "', '" + prenom + "', TO_DATE('" + dateNaissance + "', 'YYYY-MM-DD'), '" + genre + "', '" + numeroSecu + "')";
 
-            try (Statement stmtDernierID = connection.createStatement(); ResultSet rs = stmtDernierID.executeQuery(requeteDernierID)) {
-                if (rs.next()) {
-                    prochainID = rs.getLong("dernier_id") + 1; // Incrémente le dernier ID
-                }
-            }
+        // Exécuter la requête d'insertion
+        boolean insertionReussie = ConnexionDataBase.sqlUpdate(requeteInsertDMR);
 
-            // Insérer le nouveau DMR
-            String requeteInsertDMR = "INSERT INTO DMR (ID_DMR, NOM, PRENOM, DATE_NAISSANCE, GENRE, N_SECU) "
-                    + "VALUES (?, ?, ?, TO_DATE(?, 'YYYY-MM-DD'), ?, ?)";
-
-            try (PreparedStatement stmtInsert = connection.prepareStatement(requeteInsertDMR)) {
-                stmtInsert.setLong(1, prochainID);
-                stmtInsert.setString(2, nom);
-                stmtInsert.setString(3, prenom);
-                stmtInsert.setString(4, dateNaissance);
-                stmtInsert.setString(5, genre);
-                stmtInsert.setString(6, numeroSecu);
-
-                int lignesAffectees = stmtInsert.executeUpdate();
-                if (lignesAffectees <= 0) {
-                    connection.rollback(); // Annule la transaction si échec
-                    System.out.println("Échec de la création du DMR.");
-                    return false;
-                }
-            }
-
-            connection.commit(); // Valide explicitement la transaction
+        if (insertionReussie) {
             System.out.println("DMR créé avec succès.");
             return true;
-
-        } catch (SQLException e) {
-            System.out.println("Erreur lors de la création du DMR : " + e.getMessage());
+        } else {
+            System.out.println("Échec de la création du DMR.");
             return false;
         }
     }
 
-    public Dmr recupererDMR(String numeroSecu) {
-        if (numeroSecu == null || numeroSecu.isBlank()) {
-            System.out.println("Le numéro de sécurité sociale est obligatoire.");
-            return null;
+    public List<Dmr> recupererDMR(String idDMR, String numeroSecu, String nom, String prenom, Date date) {
+        List<Dmr> dmrs = new ArrayList<>();
+
+        if ((numeroSecu == null || numeroSecu.isBlank())
+                && (idDMR == null || idDMR.isBlank())
+                && (date == null)
+                && (nom == null || nom.isBlank())
+                && (prenom == null || prenom.isBlank())) {
+            System.out.println("Au moins un critère de recherche est obligatoire.");
+            return dmrs;
         }
 
-        try (Connection connection = ConnexionDataBase.getConnection()) {
-            // Vérifier si le DMR existe
-            if (!verifierDMRExiste(numeroSecu)) {
-                System.out.println("Aucun DMR trouvé pour ce numéro de sécurité sociale.");
-                return null;
-            }
+        StringBuilder requeteRecupDMR = new StringBuilder("SELECT * FROM DMR WHERE 1=1");
+        if (numeroSecu != null && !numeroSecu.isBlank()) {
+            requeteRecupDMR.append(" AND N_SECU = '").append(numeroSecu).append("'");
+        }
+        if (nom != null && !nom.isBlank()) {
+            requeteRecupDMR.append(" AND UPPER(NOM) = UPPER('").append(nom).append("')");
+        }
+        if (prenom != null && !prenom.isBlank()) {
+            requeteRecupDMR.append(" AND UPPER(PRENOM) = UPPER('").append(prenom).append("')");
+        }
+        if (idDMR != null && !idDMR.isBlank()) {
+            requeteRecupDMR.append(" AND ID_DMR = '").append(idDMR).append("'");
+        }
 
-            // Récupérer les informations du DMR
-            String requeteRecupDMR = "SELECT * FROM DMR WHERE N_SECU = ?";
-            try (PreparedStatement stmtRecup = connection.prepareStatement(requeteRecupDMR)) {
-                stmtRecup.setString(1, numeroSecu);
-                try (ResultSet rs = stmtRecup.executeQuery()) {
-                    if (rs.next()) {
-                        // private String id_dmr;
-                        String g = rs.getString("GENRE").trim().toUpperCase();
-                        Genre genre = null;
-                        if(g.equals("H")){
-                            genre=Genre.H;}
-                         else {genre=Genre.F;}
-                        
+        if (date != null) {
+            // Formater la date au format attendu par la base de données (YYYY-MM-DD)
+            requeteRecupDMR.append(" AND DATE_NAISSANCE = TO_DATE('")
+                    .append(new java.text.SimpleDateFormat("yyyy-MM-dd").format(date))
+                    .append("', 'YYYY-MM-DD')");
+        }
 
-                        // Récupérer les informations du DMR
-                        String id_dmr = rs.getString("id_dmr");
-                        String nom = rs.getString("NOM");
-                        String prenom = rs.getString("PRENOM");
-                        Date dateNaissance = rs.getDate("DATE_NAISSANCE");
+        try (Connection connection = ConnexionDataBase.getConnection(); PreparedStatement stmtRecup = connection.prepareStatement(requeteRecupDMR.toString()); ResultSet rs = stmtRecup.executeQuery()) {
 
-                        // Retourner un objet contenant les informations du DMR
-                        return new Dmr("test", nom, prenom, dateNaissance, genre, numeroSecu);
-                    }
-                }
+            while (rs.next()) {
+                String id_dmr = rs.getString("ID_DMR");
+                String nomPatient = rs.getString("NOM");
+                String prenomPatient = rs.getString("PRENOM");
+                Date dateNaissance = rs.getDate("DATE_NAISSANCE");
+                String numSecu = rs.getString("N_SECU");
+                String g = rs.getString("GENRE").trim().toUpperCase();
+                Genre genre = g.equals("H") ? Genre.H : Genre.F;
+
+                dmrs.add(new Dmr(id_dmr, nomPatient, prenomPatient, dateNaissance, genre, numSecu));
             }
         } catch (SQLException e) {
             System.out.println("Erreur lors de la récupération du DMR : " + e.getMessage());
         }
-        return null;
+
+        return dmrs;
     }
 
 }
