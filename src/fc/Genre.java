@@ -8,13 +8,8 @@ package fc;
  *
  * @author valen
  */
-public class Manipulateur extends Utilisateur{
-    
-    public Manipulateur(String id, String Mot_de_passe) {
-        super(id, Mot_de_passe, 3);
-    }
-    
-    
+public enum Genre {
+    H , F
     
     
 }

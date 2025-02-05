@@ -6,6 +6,7 @@ package ui;
 
 import fc.Administration;
 import fc.Connexion;
+import fc.Examen;
 import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -50,7 +51,8 @@ public class ConnexionPage extends Application {
 
         switch (c.acces().getAcces()) {
             case 1 -> {
-                pageExamen radP = new pageExamen(c.acces());
+                Examen ex = new Examen("1","12","src/jpg/abdomen/cor494-i569.jpg");
+                pageExamen radP = new pageExamen(ex);
                 // Affiche ou ouvre la page pour le radiologue
                 textAreaMessages.appendText("Accès Radiologue\n");
                 Stage radStage = new Stage(); // Nouveau Stage pour l'admin
