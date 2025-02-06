@@ -13,6 +13,7 @@ module SIS1 {
     requires javafx.swing;
     requires javafx.web;
     requires java.sql;
+    requires java.base;
     opens ui to javafx.graphics;
     exports ui;  // Si ton code UI est dans ce package
     

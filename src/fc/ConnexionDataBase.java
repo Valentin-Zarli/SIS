@@ -79,5 +79,18 @@ public static String sqlRequete(String requete) {
 
     // Ajoutez un return ou fermez simplement la méthode si rien n'est retourné
     return null; // Retourne null si la méthode est censée renvoyer une chaîne de caractères.
-}}
+}
+public static ResultSet sqlRequete2(String requete) {
+    try {
+        conn = ConnexionDataBase.getConnection();
+        stmt = conn.createStatement();
+        return stmt.executeQuery(requete);
+    } catch (SQLException ex) {
+        System.out.println("SQLException: " + ex.getMessage());
+        return null;
+    }
+}
+
+
+}
 
