@@ -90,18 +90,26 @@ public class Dmr {
     public String getN_secu() {
         return n_secu;
     }
-
-    public boolean verifierDMRExiste(String numeroSecu) {
-        if (numeroSecu == null || numeroSecu.isBlank()) {
-            System.out.println("Le numéro de sécurité sociale est obligatoire.");
+    
+    
+        public boolean verifierDMRExiste(String numeroSecu, String id_DMR) {
+        
+        if ((numeroSecu == null || numeroSecu.isBlank()) && (id_DMR == null || id_DMR.isBlank())) {
+            System.out.println("Le numéro de sécurité sociale ou l'ID DMR est obligatoire.");
             return false;
         }
 
-        String requeteVerif = "SELECT 1 FROM DMR WHERE N_SECU = '" + numeroSecu + "'";
-        String resultat = ConnexionDataBase.sqlRequete(requeteVerif);
-
+        StringBuilder requeteVerif = new StringBuilder("SELECT 1 FROM DMR WHERE 1=1");
+        if (numeroSecu != null && !numeroSecu.isBlank()) {
+            requeteVerif.append("N_SECU = '").append(numeroSecu).append("'");
+        } else {
+            requeteVerif.append("ID_DMR = '").append(numeroSecu).append("'");
+        }
+        String resultat = ConnexionDataBase.sqlRequete(requeteVerif.toString());
         return resultat != null && !resultat.isEmpty();
     }
+
+    
 
     public boolean creerDMR(String nom, String prenom, String dateNaissance, String genre, String numeroSecu) {
         // Validation des champs obligatoires
@@ -127,7 +135,7 @@ public class Dmr {
         }
 
         // Vérifier si un DMR existe déjà avec ce numéro de sécurité sociale
-        if (verifierDMRExiste(numeroSecu)) {
+        if (verifierDMRExiste(numeroSecu,null)) {
             System.out.println("Un DMR existe déjà pour ce numéro de sécurité sociale.");
             return false;
         }
@@ -205,5 +213,27 @@ public class Dmr {
 
         return dmrs;
     }
+    
+    
+    public List<Examen> remplirCompteRendu(String idDMR) {
+        List<Examen> ExamSansCR = new ArrayList<>();
+        List<Examen> ExamAvecCr = new ArrayList<>();
 
+        if (idDMR == null || idDMR.isBlank()) {
+            System.out.println("Veuillez remplir un identifiant de DMR.");
+            return ExamSansCR;
+        }
+        
+        if (!verifierDMRExiste(null,idDMR)) {
+            System.out.println("il n'y a pas de DMR pour ce numéro de DMR");
+            return ExamSansCR;
+        }
+        else {
+            
+        }
+        
+
+        
+        
+    }
 }

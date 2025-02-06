@@ -78,7 +78,7 @@ public class AdministrationPage extends VBox {
         buttonVerifDMR.setOnAction(event -> {
             String numSecu = textFieldNumSecuVerif.getText();
             Dmr dmr = new Dmr(null, null, null, null, null, null);
-            if (dmr.verifierDMRExiste(numSecu)) {
+            if (dmr.verifierDMRExiste(numSecu,null)) {
                 textAreaMessages.appendText("Un DMR existe pour ce numéro de sécurité sociale.\n");
             } else {
                 textAreaMessages.appendText("Aucun DMR trouvé pour ce numéro de sécurité sociale.\n");
