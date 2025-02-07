@@ -99,9 +99,9 @@ public class Dmr {
 
         StringBuilder requeteVerif = new StringBuilder("SELECT 1 FROM DMR WHERE 1=1");
         if (numeroSecu != null && !numeroSecu.isBlank()) {
-            requeteVerif.append("N_SECU = '").append(numeroSecu).append("'");
+            requeteVerif.append("AND N_SECU = '").append(numeroSecu).append("'");
         } else {
-            requeteVerif.append("ID_DMR = '").append(numeroSecu).append("'");
+            requeteVerif.append("AND ID_DMR = '").append(id_DMR).append("'");
         }
         String resultat = ConnexionDataBase.sqlRequete(requeteVerif.toString());
         return resultat != null && !resultat.isEmpty();
@@ -237,7 +237,7 @@ public class Dmr {
         int i = 0;
 
         for (i = 0; i < exams.size(); i++) {
-            if (exams.get(i).getCompte_rendu() == null && exams.get(i).getCompte_rendu().isBlank()) {
+            if (exams.get(i).getCompte_rendu() == null || exams.get(i).getCompte_rendu().isBlank()) {
                 examsSansCR.add(exams.get(i));
             } else {
                 examsAvecCR.add(exams.get(i));
