@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.URL?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane id="AnchorPane" prefHeight="800.0" prefWidth="1100.0" styleClass="mainFxmlClass" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.FXMLController">
+    <stylesheets>
+        <URL value="@fxml.css" />
+    </stylesheets>
+   <children>
+      <ListView fx:id="liste_image" layoutX="27.0" layoutY="47.0" prefHeight="269.0" prefWidth="293.0" />
+      <ImageView fx:id="image" fitHeight="259.0" fitWidth="317.0" layoutX="27.0" layoutY="377.0" pickOnBounds="true" preserveRatio="true" />
+      <Label layoutX="476.0" layoutY="117.0" text="N°dmr" />
+      <TextField fx:id="fieldDMR" layoutX="523.0" layoutY="113.0" />
+      <Label layoutX="409.0" layoutY="162.0" text="N° de sécurité social" />
+      <TextField fx:id="fieldSECU" layoutX="523.0" layoutY="158.0" />
+      <Label layoutX="488.0" layoutY="207.0" text="Nom" />
+      <TextField fx:id="fieldNom" layoutX="523.0" layoutY="203.0" />
+      <Label layoutX="476.0" layoutY="253.0" text="Prénom" />
+      <TextField fx:id="fieldPre" layoutX="523.0" layoutY="249.0" />
+      <Label layoutX="420.0" layoutY="298.0" text="Date de Naissance" />
+      <Label layoutX="566.0" layoutY="48.0" prefHeight="40.0" prefWidth="63.0" text="DMR" textAlignment="CENTER">
+         <font>
+            <Font size="26.0" />
+         </font></Label>
+      <ListView fx:id="liste_dmr" layoutX="442.0" layoutY="439.0" prefHeight="157.0" prefWidth="293.0" />
+      <Button layoutX="551.0" layoutY="387.0" mnemonicParsing="false" onAction="#actionRechercher" text="Rechercher" />
+      <Label layoutX="154.0" layoutY="658.0" text="Date de l'examen" />
+      <Button layoutX="371.0" layoutY="695.0" mnemonicParsing="false" text="Validez" />
+      <Label layoutX="53.0" layoutY="15.0" text="Liste des images:" />
+      <DatePicker fx:id="fieldDateNaissance" layoutX="525.0" layoutY="293.0" prefHeight="25.0" prefWidth="149.0" />
+      <DatePicker fx:id="fieldExamen" layoutX="263.0" layoutY="654.0" prefHeight="25.0" prefWidth="141.0" />
+      <Label layoutX="412.0" layoutY="658.0" text="H" />
+      <ComboBox prefWidth="150.0" />
+      <ComboBox fx:id="comboBoxH" layoutX="423.0" layoutY="654.0" prefHeight="25.0" prefWidth="63.0" />
+      <Label layoutX="496.0" layoutY="658.0" text="min" />
+      <ComboBox fx:id="comboBoxMin" layoutX="525.0" layoutY="654.0" prefHeight="25.0" prefWidth="63.0" />
+   </children>
+</AnchorPane>

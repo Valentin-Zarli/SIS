@@ -4,9 +4,14 @@
  */
 package fc;
 
+import static fc.ConnexionDataBase.sqlRequete2;
 import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
 import java.util.Scanner;
-
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -19,31 +24,8 @@ public class ConnexionTest {
      */
     public static void main(String[] args) {
         // TODO code application logic here
+
         
-        Connection conn =ConnexionDataBase.getConnection();
-        if(conn!=null){
-            System.out.println("Connexion correcte à la base de données");
-            Scanner sc = new Scanner(System.in);
-            
-            System.out.println("Veuillez saisir un identifiant :");
-            String id = sc.nextLine();
-            System.out.println("Veuillez saisir un mot de passe :");
-            String password = sc.nextLine();
-            
-            
-            
-            Connexion c = new Connexion(id,password);
-            System.out.println(c.acces());
-            
-            
-            /*String  requete= "SELECT * "
-                    + "FROM Administration "
-                    + "WHERE numero_id=7"
-                    + "  AND Mot_de_passe='admin127'";
-            String s = ConnexionDataBase.sqlRequete(requete);
-            System.out.println(s);*/
         
-    }
-    }
-    
-}
+
+}}

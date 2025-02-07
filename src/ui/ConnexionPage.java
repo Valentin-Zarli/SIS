@@ -6,8 +6,11 @@ package ui;
 
 import fc.Administration;
 import fc.Connexion;
+import static fc.ConnexionDataBase.sqlRequete;
+import static fc.ConnexionDataBase.sqlRequete2;
 import fc.Examen;
 import java.io.IOException;
+import java.sql.ResultSet;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
@@ -58,6 +61,9 @@ public class ConnexionPage extends Application {
                         pageExamen radP = new pageExamen(ex);
                         // Affiche ou ouvre la page pour le radiologue
                         textAreaMessages.appendText("Accès Radiologue\n");
+                        textAreaMessages.appendText(sqlRequete("Select * from utilisateur"));
+                        ResultSet res = sqlRequete2("Select NOM_IMAGE from pacs");
+                        
                         Stage radStage = new Stage(); // Nouveau Stage pour l'admin
                         Scene radScene = new Scene(radP, 800, 600); // Crée une scène avec le contenu de AdministrationPage (qui est un conteneur de type Parent ici)
                         radStage.setScene(radScene);
@@ -86,7 +92,7 @@ public class ConnexionPage extends Application {
                         // Affiche ou ouvre la page pour le manipulateur
                         textAreaMessages.appendText("Accès Manipulateur\n");
                         try {
-                            Parent root = FXMLLoader.load(getClass().getResource("ManipulateurPage.fxml")); // Vérifie le nom exact du fichier
+                            Parent root = FXMLLoader.load(getClass().getResource("FXML.fxml")); // Vérifie le nom exact du fichier
                             primaryStage.setTitle("Application avec FXML");
                             primaryStage.setScene(new Scene(root));
                             primaryStage.show();
