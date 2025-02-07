@@ -250,5 +250,21 @@ public class Dmr {
         return resultats;
 
     }
+    
+    
+    public boolean ajouterCompteRendu(int i,List<Examen> exams,String compteRendu){
+        
+        
+        if(i<exams.size()){
+            exams.get(i).setCompte_rendu(compteRendu);
+            System.out.println("Compte rendu crée");
+            return true;
+            
+        }
+        else{ System.out.println("erreur nombre trop grand");
+            return false;
+            
+        }
+    }
 
 }
