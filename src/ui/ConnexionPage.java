@@ -40,53 +40,50 @@ public class ConnexionPage extends Application {
 
         // Button action
         buttonValider.setOnAction(event -> {
-    String id = textFieldIdentifiant.getText();
-    String password = passwordField.getText();
-    Connexion c = new Connexion(id, password);
+            String id = textFieldIdentifiant.getText();
+            String password = passwordField.getText();
+            Connexion c = new Connexion(id, password);
 
-    if (c == null) {
-        textAreaMessages.appendText("Mot de passe incorrect\n");
-    } else {
-        textAreaMessages.appendText("Connexion réussie\n");
+            if (c == null) {
+                textAreaMessages.appendText("Mot de passe incorrect\n");
+            } else {
+                textAreaMessages.appendText("Connexion réussie\n");
 
-        switch (c.acces().getAcces()) {
-            case 1 -> {
-                Examen ex = new Examen("1","12","src/jpg/abdomen/cor494-i569.jpg");
-                pageExamen radP = new pageExamen(ex);
-                // Affiche ou ouvre la page pour le radiologue
-                textAreaMessages.appendText("Accès Radiologue\n");
-                Stage radStage = new Stage(); // Nouveau Stage pour l'admin
-                Scene radScene = new Scene(radP, 800, 600); // Crée une scène avec le contenu de AdministrationPage (qui est un conteneur de type Parent ici)
-                radStage.setScene(radScene);
-                radStage.setTitle("Page Administration");
-                radStage.show();
+                switch (c.acces().getAcces()) {
+                    case 1 -> {
+                        Examen ex = new Examen("1", "12", "src/jpg/abdomen/cor494-i569.jpg");
+                        pageExamen radP = new pageExamen(ex);
+                        // Affiche ou ouvre la page pour le radiologue
+                        textAreaMessages.appendText("Accès Radiologue\n");
+                        Stage radStage = new Stage(); // Nouveau Stage pour l'admin
+                        Scene radScene = new Scene(radP, 800, 600); // Crée une scène avec le contenu de AdministrationPage (qui est un conteneur de type Parent ici)
+                        radStage.setScene(radScene);
+                        radStage.setTitle("Page Administration");
+                        radStage.show();
+                    }
+                    case 2 -> {
+                        // Création de l'objet Administration avec l'accès
+                        AdministrationPage admP = new AdministrationPage((Administration) c.acces());
+
+                        // Affiche ou ouvre la page pour l'administration
+                        textAreaMessages.appendText("Accès Administration\n");
+
+                        admP.show();
+
+                        // Optionnel : Fermer la page actuelle
+                        Stage currentStage = (Stage) buttonValider.getScene().getWindow();
+                        currentStage.close();
+                    }
+                    case 3 -> {
+                        ManipulateurPage manipP = new ManipulateurPage(c.acces());
+                        // Affiche ou ouvre la page pour le manipulateur
+                        textAreaMessages.appendText("Accès Manipulateur\n");
+                    }
+                    default ->
+                        textAreaMessages.appendText("Accès non reconnu\n");
+                }
             }
-            case 2 -> {
-                // Création de l'objet Administration avec l'accès
-                AdministrationPage admP = new AdministrationPage((Administration) c.acces());
-
-                // Affiche ou ouvre la page pour l'administration
-                textAreaMessages.appendText("Accès Administration\n");
-
-                Stage adminStage = new Stage(); // Nouveau Stage pour l'admin
-                Scene adminScene = new Scene(admP, 800, 600); // Crée une scène avec le contenu de AdministrationPage (qui est un conteneur de type Parent ici)
-                adminStage.setScene(adminScene);
-                adminStage.setTitle("Page Administration");
-                adminStage.show();
-
-                // Optionnel : Fermer la page actuelle
-                Stage currentStage = (Stage) buttonValider.getScene().getWindow();
-                currentStage.close();
-            }
-            case 3 -> {
-                ManipulateurPage manipP = new ManipulateurPage(c.acces());
-                // Affiche ou ouvre la page pour le manipulateur
-                textAreaMessages.appendText("Accès Manipulateur\n");
-            }
-            default -> textAreaMessages.appendText("Accès non reconnu\n");
-        }
-    }
-});
+        });
 
         // Layout with VBox
         VBox vbox = new VBox(10, textAreaMessages, labelIdentifiant, textFieldIdentifiant,
@@ -106,4 +103,3 @@ public class ConnexionPage extends Application {
         launch(args);
     }
 }
-

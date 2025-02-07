@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox alignment="CENTER" prefHeight="600" prefWidth="800" spacing="10" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="ui.AdministrationPageController">
+    <Label fx:id="welcomeLabel" style="-fx-font-size: 20px; -fx-font-weight: bold;" text="Bienvenue, " />
+    
+    <Label text="Vérifier l'existence d'un DMR :" />
+    <TextField fx:id="textFieldNumSecuVerif" promptText="Entrez le numéro de sécurité sociale" />
+    <Button fx:id="buttonVerifDMR" text="Vérifier" textFill="#ff0909" />
+    
+    <Label text="Créer un nouveau DMR :" />
+    <TextField fx:id="textFieldNom" promptText="Entrez le nom" />
+    <TextField fx:id="textFieldPrenom" promptText="Entrez le prénom" />
+    <TextField fx:id="textFieldDateNaissance" promptText="Entrez la date de naissance (YYYY-MM-DD)" />
+    <TextField fx:id="textFieldGenre" promptText="Entrez le genre (H ou F)" />
+    <TextField fx:id="textFieldNumSecuCreer" promptText="Entrez le numéro de sécurité sociale" />
+    <Button fx:id="buttonCreerDMR" text="Créer" />
+    
+    <Label text="Rechercher un DMR :" />
+    <TextField fx:id="textFieldIdDMR" promptText="Entrez l'ID DMR" />
+    <TextField fx:id="textFieldNomRechercher" promptText="Entrez le nom" />
+    <TextField fx:id="textFieldPrenomRechercher" promptText="Entrez le prénom" />
+    <TextField fx:id="textFieldDateNaissanceRechercher" promptText="Entrez la date de naissance (YYYY-MM-DD)" />
+    <TextField fx:id="textFieldNumSecuRechercher" promptText="Entrez le numéro de sécurité sociale" />
+    <Button fx:id="buttonRechercherDMR" text="Rechercher" />
+    
+    <TextArea fx:id="textAreaMessages" editable="false" prefHeight="100" />
+</VBox>

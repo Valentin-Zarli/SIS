@@ -14,11 +14,7 @@ module SIS1 {
     requires javafx.web;
     requires java.sql;
     requires java.base;
-    opens ui to javafx.graphics;
-    exports ui;  // Si ton code UI est dans ce package
-    
 
-      // Exporter le package ui si tu veux qu'il soit accessible
-    exports fc;  // Exporter le package fc si tu veux qu'il soit accessible
-    opens fc to javafx.fxml;
+    opens ui to javafx.fxml; 
+    exports ui;
 }
