@@ -14,6 +14,7 @@ module SIS1 {
     requires javafx.web;
     requires java.sql;
     requires java.base;
+    opens fc to javafx.base;
 
     opens ui to javafx.fxml; 
     exports ui;
