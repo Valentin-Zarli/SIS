@@ -28,8 +28,11 @@ public class RadiologuePageController {
 
     public void setRadiologue(Radiologue radiologue) {
         this.radiologue = radiologue;
-        welcomeLabel.setText("Bienvenue, " + radiologue.getNom());
-        
+        if (welcomeLabel != null) {
+            welcomeLabel.setText("Bienvenue, " + radiologue.getNom());
+        } else {
+            System.out.println("Erreur : welcomeLabel est null.");
+        }
     }
 
     @FXML
@@ -94,7 +97,7 @@ public class RadiologuePageController {
     }
 
     private void ouvrirPageExamen(Examen examen) {
-        new pageExamen(examen).show();
+        //new pageExamen(examen).show();
     }
 
     private void showAlert(String title, String message) {
@@ -104,4 +107,3 @@ public class RadiologuePageController {
         alert.showAndWait();
     }
 }
-

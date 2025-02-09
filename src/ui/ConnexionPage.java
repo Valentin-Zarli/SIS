@@ -58,9 +58,9 @@ public class ConnexionPage extends Application {
                     switch (utilisateur.getAcces()) {
                         case 1 -> {
                             System.out.println("Accès Radiologue détecté");
-                            RadiologuePage radPage = new RadiologuePage((Radiologue) utilisateur); // Cast en Radiologue
+                            RadiologuePage radPage = new RadiologuePage((Radiologue) utilisateur); 
                             textAreaMessages.appendText("Accès Radiologue\n");
-                            radPage.show();
+                            radPage.show(); 
                         }
                         case 2 -> {
                             System.out.println("Accès Administration détecté");
