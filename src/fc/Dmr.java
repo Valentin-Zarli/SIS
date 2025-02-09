@@ -12,7 +12,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -159,58 +158,58 @@ public class Dmr {
     }
 
     public List<Dmr> recupererDMR(String idDMR, String numeroSecu, String nom, String prenom, Date date) {
-        List<Dmr> dmrs = new ArrayList<>();
+    List<Dmr> dmrs = new ArrayList<>();
 
-        // Vérification des critères de recherche
-        if ((numeroSecu == null || numeroSecu.isBlank())
-                && (idDMR == null || idDMR.isBlank())
-                && (date == null)
-                && (nom == null || nom.isBlank())
-                && (prenom == null || prenom.isBlank())) {
-            System.out.println("Au moins un critère de recherche est obligatoire.");
-            return dmrs;
-        }
-
-        // Construction de la requête SQL
-        StringBuilder requeteRecupDMR = new StringBuilder("SELECT * FROM DMR WHERE 1=1");
-        if (numeroSecu != null && !numeroSecu.isBlank()) {
-            requeteRecupDMR.append(" AND N_SECU = '").append(numeroSecu).append("'");
-        }
-        if (nom != null && !nom.isBlank()) {
-            requeteRecupDMR.append(" AND UPPER(NOM) = UPPER('").append(nom).append("')");
-        }
-        if (prenom != null && !prenom.isBlank()) {
-            requeteRecupDMR.append(" AND UPPER(PRENOM) = UPPER('").append(prenom).append("')");
-        }
-        if (idDMR != null && !idDMR.isBlank()) {
-            requeteRecupDMR.append(" AND ID_DMR = '").append(idDMR).append("'");
-        }
-        if (date != null) {
-            // Formater la date au format attendu par la base de données (YYYY-MM-DD)
-            requeteRecupDMR.append(" AND DATE_NAISSANCE = TO_DATE('")
-                    .append(new java.text.SimpleDateFormat("yyyy-MM-dd").format(date))
-                    .append("', 'YYYY-MM-DD')");
-        }
-
-        // Exécution de la requête avec sqlRequete
-        try (ResultSet rs = ConnexionDataBase.sqlRequete2(requeteRecupDMR.toString())) {
-            while (rs != null && rs.next()) {
-                String id_dmr = rs.getString("ID_DMR");
-                String nomPatient = rs.getString("NOM");
-                String prenomPatient = rs.getString("PRENOM");
-                Date dateNaissance = rs.getDate("DATE_NAISSANCE");
-                String numSecu = rs.getString("N_SECU");
-                String g = rs.getString("GENRE").trim().toUpperCase();
-                Genre genre = g.equals("H") ? Genre.H : Genre.F;
-
-                dmrs.add(new Dmr(id_dmr, nomPatient, prenomPatient, dateNaissance, genre, numSecu));
-            }
-        } catch (SQLException e) {
-            System.out.println("Erreur lors de la récupération du DMR : " + e.getMessage());
-        }
-
+    // Vérification des critères de recherche
+    if ((numeroSecu == null || numeroSecu.isBlank())
+            && (idDMR == null || idDMR.isBlank())
+            && (date == null)
+            && (nom == null || nom.isBlank())
+            && (prenom == null || prenom.isBlank())) {
+        System.out.println("Au moins un critère de recherche est obligatoire.");
         return dmrs;
     }
+
+    // Construction de la requête SQL
+    StringBuilder requeteRecupDMR = new StringBuilder("SELECT * FROM DMR WHERE 1=1");
+    if (numeroSecu != null && !numeroSecu.isBlank()) {
+        requeteRecupDMR.append(" AND N_SECU = '").append(numeroSecu).append("'");
+    }
+    if (nom != null && !nom.isBlank()) {
+        requeteRecupDMR.append(" AND UPPER(NOM) = UPPER('").append(nom).append("')");
+    }
+    if (prenom != null && !prenom.isBlank()) {
+        requeteRecupDMR.append(" AND UPPER(PRENOM) = UPPER('").append(prenom).append("')");
+    }
+    if (idDMR != null && !idDMR.isBlank()) {
+        requeteRecupDMR.append(" AND ID_DMR = '").append(idDMR).append("'");
+    }
+    if (date != null) {
+        // Formater la date au format attendu par la base de données (YYYY-MM-DD)
+        requeteRecupDMR.append(" AND DATE_NAISSANCE = TO_DATE('")
+                .append(new java.text.SimpleDateFormat("yyyy-MM-dd").format(date))
+                .append("', 'YYYY-MM-DD')");
+    }
+
+    // Exécution de la requête avec sqlRequete
+    try (ResultSet rs = ConnexionDataBase.sqlRequete2(requeteRecupDMR.toString())) {
+        while (rs != null && rs.next()) {
+            String id_dmr = rs.getString("ID_DMR");
+            String nomPatient = rs.getString("NOM");
+            String prenomPatient = rs.getString("PRENOM");
+            Date dateNaissance = rs.getDate("DATE_NAISSANCE");
+            String numSecu = rs.getString("N_SECU");
+            String g = rs.getString("GENRE").trim().toUpperCase();
+            Genre genre = g.equals("H") ? Genre.H : Genre.F;
+
+            dmrs.add(new Dmr(id_dmr, nomPatient, prenomPatient, dateNaissance, genre, numSecu));
+        }
+    } catch (SQLException e) {
+        System.out.println("Erreur lors de la récupération du DMR : " + e.getMessage());
+    }
+
+    return dmrs;
+}
 
     public Map<String, List<Examen>> AfficherCompteRendu(String idDMR) {
         Examen exam = new Examen();
@@ -247,31 +246,25 @@ public class Dmr {
 
         resultats.put("SansCompteRendu", examsSansCR);
         resultats.put("AvecCompteRendu", examsAvecCR);
-
+        
         return resultats;
 
     }
-
-    public boolean ajouterCompteRendu(int i, List<Examen> exams, String compteRendu) {
-    if (i < exams.size() && (exams.get(i).getCompte_rendu() == null || exams.get(i).getCompte_rendu().isBlank())) {
-        Examen examen = exams.get(i);
-        String id_dmr = examen.getId_dmr();
-        String date_examen = examen.getDate();
-
-        // Ajouter le compte-rendu dans la base de données
-        boolean success = Examen.ajouterCompteRenduBD(id_dmr, date_examen, compteRendu);
-
-        if (success) {
-            examen.setCompte_rendu(compteRendu); // Mettre à jour l'objet Examen localement
-            System.out.println("Compte rendu créé avec succès.");
+    
+    
+    public boolean ajouterCompteRendu(int i,List<Examen> exams,String compteRendu){
+        
+        
+        if(i<exams.size()){
+            exams.get(i).setCompte_rendu(compteRendu);
+            System.out.println("Compte rendu crée");
             return true;
-        } else {
-            System.out.println("Erreur lors de l'ajout du compte rendu.");
-            return false;
+            
         }
-    } else {
-        System.out.println("Erreur : nombre trop grand ou compte rendu déjà écrit.");
-        return false;
+        else{ System.out.println("erreur nombre trop grand");
+            return false;
+            
+        }
     }
-}
+
 }

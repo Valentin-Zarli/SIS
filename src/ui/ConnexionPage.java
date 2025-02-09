@@ -4,11 +4,9 @@
  */
 package ui;
 
-import fc.Radiologue;
 import fc.Administration;
 import fc.Connexion;
 import fc.Examen;
-import fc.Utilisateur;
 import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -51,33 +49,38 @@ public class ConnexionPage extends Application {
             } else {
                 textAreaMessages.appendText("Connexion réussie\n");
 
-                Utilisateur utilisateur = c.acces();
-                if (utilisateur == null) {
-                    textAreaMessages.appendText("Aucun utilisateur trouvé avec ces identifiants.\n");
-                } else {
-                    switch (utilisateur.getAcces()) {
-                        case 1 -> {
-                            System.out.println("Accès Radiologue détecté");
-                            RadiologuePage radPage = new RadiologuePage((Radiologue) utilisateur); // Cast en Radiologue
-                            textAreaMessages.appendText("Accès Radiologue\n");
-                            radPage.show();
-                        }
-                        case 2 -> {
-                            System.out.println("Accès Administration détecté");
-                            AdministrationPage admPage = new AdministrationPage((Administration) utilisateur); // Cast en Administration
-                            textAreaMessages.appendText("Accès Administration\n");
-                            admPage.show();
-                        }
-                        case 3 -> {
-                            System.out.println("Accès Manipulateur détecté");
-//                            ManipulateurPage manipPage = new ManipulateurPage((Manipulateur) utilisateur); // Cast en Manipulateur
-//                            textAreaMessages.appendText("Accès Manipulateur\n");
-                        }
-                        default -> {
-                            System.out.println("Accès non reconnu");
-                            textAreaMessages.appendText("Accès non reconnu\n");
-                        }
+                switch (c.acces().getAcces()) {
+                    case 1 -> {
+                        Examen ex = new Examen("1", "12", "src/jpg/abdomen/cor494-i569.jpg");
+                        pageExamen radP = new pageExamen(ex);
+                        // Affiche ou ouvre la page pour le radiologue
+                        textAreaMessages.appendText("Accès Radiologue\n");
+                        Stage radStage = new Stage(); // Nouveau Stage pour l'admin
+                        Scene radScene = new Scene(radP, 800, 600); // Crée une scène avec le contenu de AdministrationPage (qui est un conteneur de type Parent ici)
+                        radStage.setScene(radScene);
+                        radStage.setTitle("Page Administration");
+                        radStage.show();
                     }
+                    case 2 -> {
+                        // Création de l'objet Administration avec l'accès
+                        AdministrationPage admP = new AdministrationPage((Administration) c.acces());
+
+                        // Affiche ou ouvre la page pour l'administration
+                        textAreaMessages.appendText("Accès Administration\n");
+
+                        admP.show();
+
+                        // Optionnel : Fermer la page actuelle
+                        Stage currentStage = (Stage) buttonValider.getScene().getWindow();
+                        currentStage.close();
+                    }
+                    case 3 -> {
+                        ManipulateurPage manipP = new ManipulateurPage(c.acces());
+                        // Affiche ou ouvre la page pour le manipulateur
+                        textAreaMessages.appendText("Accès Manipulateur\n");
+                    }
+                    default ->
+                        textAreaMessages.appendText("Accès non reconnu\n");
                 }
             }
         });
