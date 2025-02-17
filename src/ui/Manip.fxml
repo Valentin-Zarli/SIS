@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" prefHeight="800.0" prefWidth="1100.0" styleClass="mainFxmlClass" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.FXMLController">
+<AnchorPane id="AnchorPane" prefHeight="800.0" prefWidth="1100.0" styleClass="mainFxmlClass" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.ManipController">
     <stylesheets>
         <URL value="@fxml.css" />
     </stylesheets>
@@ -39,7 +39,6 @@
       <DatePicker fx:id="fieldDateNaissance" layoutX="525.0" layoutY="293.0" prefHeight="25.0" prefWidth="149.0" />
       <DatePicker fx:id="fieldExamen" layoutX="263.0" layoutY="654.0" prefHeight="25.0" prefWidth="141.0" />
       <Label layoutX="412.0" layoutY="658.0" text="H" />
-      <ComboBox prefWidth="150.0" />
       <ComboBox fx:id="comboBoxH" layoutX="423.0" layoutY="654.0" prefHeight="25.0" prefWidth="63.0" />
       <Label layoutX="496.0" layoutY="658.0" text="min" />
       <ComboBox fx:id="comboBoxMin" layoutX="525.0" layoutY="654.0" prefHeight="25.0" prefWidth="63.0" />

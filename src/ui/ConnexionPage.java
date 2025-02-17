@@ -92,7 +92,7 @@ public class ConnexionPage extends Application {
                         // Affiche ou ouvre la page pour le manipulateur
                         textAreaMessages.appendText("Accès Manipulateur\n");
                         try {
-                            Parent root = FXMLLoader.load(getClass().getResource("FXML.fxml")); // Vérifie le nom exact du fichier
+                            Parent root = FXMLLoader.load(getClass().getResource("Manip.fxml")); // Vérifie le nom exact du fichier
                             primaryStage.setTitle("Application avec FXML");
                             primaryStage.setScene(new Scene(root));
                             primaryStage.show();

@@ -30,7 +30,7 @@ import javafx.scene.image.ImageView;
  *
  * @author valen
  */
-public class FXMLController implements Initializable {
+public class ManipController implements Initializable {
 
     /**
      * Initializes the controller class.
