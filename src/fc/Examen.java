@@ -73,22 +73,30 @@ public class Examen {
         }
         
         
+        
 
        
         
 
          // Compléter avec secondes et microsecondes
-        Date += ":00.000000";
+        
 
         // Insérer le nouveau DMR
-        String requeteInsertExamen = "INSERT INTO DMR (ID_DMR, DATE_EXAMEN, IMAGE_PATH,COMPTE_RENDU) "
-                + "VALUES ('" + id_dmr +"',STR_TO_DATE('"+Date+  "',%Y-%m-%d %H:%i:%s.%f'),'" + Path+"')";
+        String requeteInsertExamen = "INSERT INTO EXAMEN (ID_DMR, DATE_EXAMEN, IMAGE_PATH,COMPTE_RENDU) "
+                + "VALUES (" + id_dmr +",TO_TIMESTAMP('"+Date+  "','YYYY-MM-DD HH24:MI'),'" + Path+"',NULL)";
+        String req = "INSERT INTO EXAMEN";   
+                
+        
+        System.out.println("INSERT INTO EXAMEN (ID_DMR, DATE_EXAMEN, IMAGE_PATH,COMPTE_RENDU) "
+                + "VALUES (" + id_dmr +",TO_TIMESTAMP('"+Date+  "','YYYY-MM-DD HH24:MI'),'" + Path+"')");
+        
 
         // Exécuter la requête d'insertion
-        boolean insertionReussie = ConnexionDataBase.sqlUpdate(requeteInsertExamen);
+        boolean insertionReussie = ConnexionDataBase.sqlUpdate("INSERT INTO EXAMEN (ID_DMR, DATE_EXAMEN, IMAGE_PATH,COMPTE_RENDU) "
+                + "VALUES (" + id_dmr +",TO_TIMESTAMP('"+Date+  "','YYYY-MM-DD HH24:MI'),'" + Path+"',NULL)");
 
         if (insertionReussie) {
-            System.out.println("DMR créé avec succès.");
+            System.out.println("Examen créé avec succès.");
             return true;
         } else {
             System.out.println("Échec de la création du DMR.");
