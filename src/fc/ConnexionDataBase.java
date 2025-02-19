@@ -92,18 +92,4 @@ public static ResultSet sqlRequete2(String requete) {
     }
 }
 
-
-}
-
-
-    public static ResultSet sqlRequete2(String requete) {
-        try {
-            conn = ConnexionDataBase.getConnection();
-            stmt = conn.createStatement();
-            return stmt.executeQuery(requete);
-        } catch (SQLException ex) {
-            System.out.println("SQLException: " + ex.getMessage());
-            return null;
-}
-}
 }

@@ -19,7 +19,4 @@ module SIS1 {
     
     exports ui;  // Si ton code UI est dans ce package
     
-
-    opens ui to javafx.fxml; 
-    exports ui;
 }
