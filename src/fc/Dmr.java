@@ -12,13 +12,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
  * @author valen
  */
-
-
 public class Dmr {
 
     private String id_dmr;
@@ -27,9 +27,9 @@ public class Dmr {
     private Date Date_de_naissance;
     private Genre genre;
     private String n_secu;
-    
+
     public Dmr() {
-        
+
         this.id_dmr = null;
         this.nom = null;
         this.prenom = null;
@@ -47,7 +47,6 @@ public class Dmr {
         this.n_secu = n_secu;
 
     }
-    
 
     /**
      * @return the id_dmr
@@ -91,15 +90,20 @@ public class Dmr {
         return n_secu;
     }
 
-    public boolean verifierDMRExiste(String numeroSecu) {
-        if (numeroSecu == null || numeroSecu.isBlank()) {
-            System.out.println("Le numéro de sécurité sociale est obligatoire.");
+    public boolean verifierDMRExiste(String numeroSecu, String id_DMR) {
+
+        if ((numeroSecu == null || numeroSecu.isBlank()) && (id_DMR == null || id_DMR.isBlank())) {
+            System.out.println("Le numéro de sécurité sociale ou l'ID DMR est obligatoire.");
             return false;
         }
 
-        String requeteVerif = "SELECT 1 FROM DMR WHERE N_SECU = '" + numeroSecu + "'";
-        String resultat = ConnexionDataBase.sqlRequete(requeteVerif);
-
+        StringBuilder requeteVerif = new StringBuilder("SELECT 1 FROM DMR WHERE 1=1");
+        if (numeroSecu != null && !numeroSecu.isBlank()) {
+            requeteVerif.append("AND N_SECU = '").append(numeroSecu).append("'");
+        } else {
+            requeteVerif.append("AND ID_DMR = '").append(id_DMR).append("'");
+        }
+        String resultat = ConnexionDataBase.sqlRequete(requeteVerif.toString());
         return resultat != null && !resultat.isEmpty();
     }
 
@@ -127,7 +131,7 @@ public class Dmr {
         }
 
         // Vérifier si un DMR existe déjà avec ce numéro de sécurité sociale
-        if (verifierDMRExiste(numeroSecu)) {
+        if (verifierDMRExiste(numeroSecu, null)) {
             System.out.println("Un DMR existe déjà pour ce numéro de sécurité sociale.");
             return false;
         }
@@ -154,56 +158,113 @@ public class Dmr {
     }
 
     public List<Dmr> recupererDMR(String idDMR, String numeroSecu, String nom, String prenom, Date date) {
-        List<Dmr> dmrs = new ArrayList<>();
+    List<Dmr> dmrs = new ArrayList<>();
 
-        if ((numeroSecu == null || numeroSecu.isBlank())
-                && (idDMR == null || idDMR.isBlank())
-                && (date == null)
-                && (nom == null || nom.isBlank())
-                && (prenom == null || prenom.isBlank())) {
-            System.out.println("Au moins un critère de recherche est obligatoire.");
-            return dmrs;
-        }
-
-        StringBuilder requeteRecupDMR = new StringBuilder("SELECT * FROM DMR WHERE 1=1");
-        if (numeroSecu != null && !numeroSecu.isBlank()) {
-            requeteRecupDMR.append(" AND N_SECU = '").append(numeroSecu).append("'");
-        }
-        if (nom != null && !nom.isBlank()) {
-            requeteRecupDMR.append(" AND UPPER(NOM) = UPPER('").append(nom).append("')");
-        }
-        if (prenom != null && !prenom.isBlank()) {
-            requeteRecupDMR.append(" AND UPPER(PRENOM) = UPPER('").append(prenom).append("')");
-        }
-        if (idDMR != null && !idDMR.isBlank()) {
-            requeteRecupDMR.append(" AND ID_DMR = '").append(idDMR).append("'");
-        }
-
-        if (date != null) {
-            // Formater la date au format attendu par la base de données (YYYY-MM-DD)
-            requeteRecupDMR.append(" AND DATE_NAISSANCE = TO_DATE('")
-                    .append(new java.text.SimpleDateFormat("yyyy-MM-dd").format(date))
-                    .append("', 'YYYY-MM-DD')");
-        }
-
-        try (Connection connection = ConnexionDataBase.getConnection(); PreparedStatement stmtRecup = connection.prepareStatement(requeteRecupDMR.toString()); ResultSet rs = stmtRecup.executeQuery()) {
-
-            while (rs.next()) {
-                String id_dmr = rs.getString("ID_DMR");
-                String nomPatient = rs.getString("NOM");
-                String prenomPatient = rs.getString("PRENOM");
-                Date dateNaissance = rs.getDate("DATE_NAISSANCE");
-                String numSecu = rs.getString("N_SECU");
-                String g = rs.getString("GENRE").trim().toUpperCase();
-                Genre genre = g.equals("H") ? Genre.H : Genre.F;
-
-                dmrs.add(new Dmr(id_dmr, nomPatient, prenomPatient, dateNaissance, genre, numSecu));
-            }
-        } catch (SQLException e) {
-            System.out.println("Erreur lors de la récupération du DMR : " + e.getMessage());
-        }
-
+    // Vérification des critères de recherche
+    if ((numeroSecu == null || numeroSecu.isBlank())
+            && (idDMR == null || idDMR.isBlank())
+            && (date == null)
+            && (nom == null || nom.isBlank())
+            && (prenom == null || prenom.isBlank())) {
+        System.out.println("Au moins un critère de recherche est obligatoire.");
         return dmrs;
+    }
+
+    // Construction de la requête SQL
+    StringBuilder requeteRecupDMR = new StringBuilder("SELECT * FROM DMR WHERE 1=1");
+    if (numeroSecu != null && !numeroSecu.isBlank()) {
+        requeteRecupDMR.append(" AND N_SECU = '").append(numeroSecu).append("'");
+    }
+    if (nom != null && !nom.isBlank()) {
+        requeteRecupDMR.append(" AND UPPER(NOM) = UPPER('").append(nom).append("')");
+    }
+    if (prenom != null && !prenom.isBlank()) {
+        requeteRecupDMR.append(" AND UPPER(PRENOM) = UPPER('").append(prenom).append("')");
+    }
+    if (idDMR != null && !idDMR.isBlank()) {
+        requeteRecupDMR.append(" AND ID_DMR = '").append(idDMR).append("'");
+    }
+    if (date != null) {
+        // Formater la date au format attendu par la base de données (YYYY-MM-DD)
+        requeteRecupDMR.append(" AND DATE_NAISSANCE = TO_DATE('")
+                .append(new java.text.SimpleDateFormat("yyyy-MM-dd").format(date))
+                .append("', 'YYYY-MM-DD')");
+    }
+
+    // Exécution de la requête avec sqlRequete
+    try (ResultSet rs = ConnexionDataBase.sqlRequete2(requeteRecupDMR.toString())) {
+        while (rs != null && rs.next()) {
+            String id_dmr = rs.getString("ID_DMR");
+            String nomPatient = rs.getString("NOM");
+            String prenomPatient = rs.getString("PRENOM");
+            Date dateNaissance = rs.getDate("DATE_NAISSANCE");
+            String numSecu = rs.getString("N_SECU");
+            String g = rs.getString("GENRE").trim().toUpperCase();
+            Genre genre = g.equals("H") ? Genre.H : Genre.F;
+
+            dmrs.add(new Dmr(id_dmr, nomPatient, prenomPatient, dateNaissance, genre, numSecu));
+        }
+    } catch (SQLException e) {
+        System.out.println("Erreur lors de la récupération du DMR : " + e.getMessage());
+    }
+
+    return dmrs;
+}
+
+    public Map<String, List<Examen>> AfficherCompteRendu(String idDMR) {
+        Examen exam = new Examen();
+
+        Map<String, List<Examen>> resultats = new HashMap<>();
+        List<Examen> examsSansCR = new ArrayList<>();
+        List<Examen> examsAvecCR = new ArrayList<>();
+
+        if (idDMR == null || idDMR.isBlank()) {
+            System.out.println("Veuillez remplir un identifiant de DMR.");
+            resultats.put("SansCompteRendu", examsSansCR);
+            resultats.put("AvecCompteRendu", examsAvecCR);
+            return resultats;
+        }
+
+        List<Examen> exams = exam.recupererExamen(idDMR, null);
+
+        if (!verifierDMRExiste(null, idDMR)) {
+            System.out.println("il n'y a pas de DMR pour ce numéro de DMR");
+            resultats.put("SansCompteRendu", examsSansCR);
+            resultats.put("AvecCompteRendu", examsAvecCR);
+            return resultats;
+        }
+
+        int i = 0;
+
+        for (i = 0; i < exams.size(); i++) {
+            if (exams.get(i).getCompte_rendu() == null || exams.get(i).getCompte_rendu().isBlank()) {
+                examsSansCR.add(exams.get(i));
+            } else {
+                examsAvecCR.add(exams.get(i));
+            }
+        }
+
+        resultats.put("SansCompteRendu", examsSansCR);
+        resultats.put("AvecCompteRendu", examsAvecCR);
+        
+        return resultats;
+
+    }
+    
+    
+    public boolean ajouterCompteRendu(int i,List<Examen> exams,String compteRendu){
+        
+        
+        if(i<exams.size()){
+            exams.get(i).setCompte_rendu(compteRendu);
+            System.out.println("Compte rendu crée");
+            return true;
+            
+        }
+        else{ System.out.println("erreur nombre trop grand");
+            return false;
+            
+        }
     }
 
 }

@@ -61,9 +61,6 @@ public class ConnexionPage extends Application {
                         pageExamen radP = new pageExamen(ex);
                         // Affiche ou ouvre la page pour le radiologue
                         textAreaMessages.appendText("Accès Radiologue\n");
-                        textAreaMessages.appendText(sqlRequete("Select * from utilisateur"));
-                        ResultSet res = sqlRequete2("Select NOM_IMAGE from pacs");
-                        
                         Stage radStage = new Stage(); // Nouveau Stage pour l'admin
                         Scene radScene = new Scene(radP, 800, 600); // Crée une scène avec le contenu de AdministrationPage (qui est un conteneur de type Parent ici)
                         radStage.setScene(radScene);
@@ -76,18 +73,15 @@ public class ConnexionPage extends Application {
 
                         // Affiche ou ouvre la page pour l'administration
                         textAreaMessages.appendText("Accès Administration\n");
+                        admP.show();
 
-                        Stage adminStage = new Stage(); // Nouveau Stage pour l'admin
-                        Scene adminScene = new Scene(admP, 800, 600); // Crée une scène avec le contenu de AdministrationPage (qui est un conteneur de type Parent ici)
-                        adminStage.setScene(adminScene);
-                        adminStage.setTitle("Page Administration");
-                        adminStage.show();
 
                         // Optionnel : Fermer la page actuelle
                         Stage currentStage = (Stage) buttonValider.getScene().getWindow();
                         currentStage.close();
                     }
                     case 3 -> {
+
                         //ManipulateurPage manipP = new ManipulateurPage(c.acces());
                         // Affiche ou ouvre la page pour le manipulateur
                         textAreaMessages.appendText("Accès Manipulateur\n");
