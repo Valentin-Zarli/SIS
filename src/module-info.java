@@ -15,6 +15,11 @@ module SIS1 {
     requires java.sql;
     requires java.base;
 
+    opens ui to javafx.graphics , javafx.fxml;
+    
+    exports ui;  // Si ton code UI est dans ce package
+    
+
     opens ui to javafx.fxml; 
     exports ui;
 }

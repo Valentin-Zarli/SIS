@@ -6,9 +6,15 @@ package ui;
 
 import fc.Administration;
 import fc.Connexion;
+import static fc.ConnexionDataBase.sqlRequete;
+import static fc.ConnexionDataBase.sqlRequete2;
 import fc.Examen;
+import java.io.IOException;
+import java.sql.ResultSet;
 import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
@@ -67,17 +73,27 @@ public class ConnexionPage extends Application {
 
                         // Affiche ou ouvre la page pour l'administration
                         textAreaMessages.appendText("Accès Administration\n");
-
                         admP.show();
+
 
                         // Optionnel : Fermer la page actuelle
                         Stage currentStage = (Stage) buttonValider.getScene().getWindow();
                         currentStage.close();
                     }
                     case 3 -> {
-                        ManipulateurPage manipP = new ManipulateurPage(c.acces());
+
+                        //ManipulateurPage manipP = new ManipulateurPage(c.acces());
                         // Affiche ou ouvre la page pour le manipulateur
                         textAreaMessages.appendText("Accès Manipulateur\n");
+                        try {
+                            Parent root = FXMLLoader.load(getClass().getResource("Manip.fxml")); // Vérifie le nom exact du fichier
+                            primaryStage.setTitle("Application avec FXML");
+                            primaryStage.setScene(new Scene(root));
+                            primaryStage.show();
+                        } catch (IOException e) {
+                            e.printStackTrace(); // Affiche l'erreur si le FXML n'est pas trouvé
+                        }
+
                     }
                     default ->
                         textAreaMessages.appendText("Accès non reconnu\n");

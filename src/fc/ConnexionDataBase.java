@@ -35,47 +35,48 @@ public class ConnexionDataBase {
         Connection conn = null;
         try {
             conn = DriverManager.getConnection(dbUrl, user, password);
-            
+
         } catch (SQLException e) {
             System.out.println("SQLException: " + e.getMessage());
         }
         return conn;
     }
-    
-    
+
     public static boolean sqlUpdate(String requete) {
-    try (Connection conn = getConnection(); Statement stmt = conn.createStatement()) {
-        // Exécution de la requête de modification
-        int lignesAffectees = stmt.executeUpdate(requete);
-        return lignesAffectees > 0; // Retourne true si au moins une ligne a été affectée
-    } catch (SQLException ex) {
-        System.out.println("SQLException: " + ex.getMessage());
-        return false;
-    }
-}
-public static String sqlRequete(String requete) {
-    Scanner sc = new Scanner(System.in); // Cette variable est définie mais jamais utilisée.
-
-    try {
-        conn = ConnexionDataBase.getConnection();
-        stmt = conn.createStatement();
-
-        // Exécution de la requête SQL
-        rset = stmt.executeQuery(requete);
-        String resultat;
-        resultat="";
-       
-        while (rset.next()) {
-            // Affichage du premier champ de chaque ligne du résultat
-            resultat += rset.getString(1);
-          
+        try (Connection conn = getConnection(); Statement stmt = conn.createStatement()) {
+            // Exécution de la requête de modification
+            int lignesAffectees = stmt.executeUpdate(requete);
+            return lignesAffectees > 0; // Retourne true si au moins une ligne a été affectée
+        } catch (SQLException ex) {
+            System.out.println("SQLException: " + ex.getMessage());
+            return false;
         }
-        System.out.println("Resultat : " +resultat);
-        
-        return resultat;
-    } catch (SQLException ex) {
-        System.out.println("SQLException: " + ex.getMessage());
     }
+
+    public static String sqlRequete(String requete) {
+        Scanner sc = new Scanner(System.in); // Cette variable est définie mais jamais utilisée.
+
+        try {
+            conn = ConnexionDataBase.getConnection();
+            stmt = conn.createStatement();
+
+            // Exécution de la requête SQL
+            rset = stmt.executeQuery(requete);
+            String resultat;
+            resultat = "";
+
+            while (rset.next()) {
+                // Affichage du premier champ de chaque ligne du résultat
+                resultat += rset.getString(1);
+
+            }
+            System.out.println("Resultat : " + resultat);
+
+            return resultat;
+        } catch (SQLException ex) {
+            System.out.println("SQLException: " + ex.getMessage());
+        }
+
 
     // Ajoutez un return ou fermez simplement la méthode si rien n'est retourné
     return null; // Retourne null si la méthode est censée renvoyer une chaîne de caractères.
@@ -94,3 +95,15 @@ public static ResultSet sqlRequete2(String requete) {
 
 }
 
+
+    public static ResultSet sqlRequete2(String requete) {
+        try {
+            conn = ConnexionDataBase.getConnection();
+            stmt = conn.createStatement();
+            return stmt.executeQuery(requete);
+        } catch (SQLException ex) {
+            System.out.println("SQLException: " + ex.getMessage());
+            return null;
+}
+}
+}

@@ -20,10 +20,11 @@ import java.sql.Statement;
  */
 public class Examen {
 
-    private  String id_dmr;
-    private  String date;
-    private  String image_path;
+    private String id_dmr;
+    private String date;
+    private String image_path;
     private String compte_rendu;
+
     
    
     public Examen(){
@@ -36,8 +37,8 @@ public class Examen {
         this.date=date;
         this.image_path=image_path;
         
+
     }
-    
 
     /**
      * @return the id_dmr
@@ -73,6 +74,50 @@ public class Examen {
     public void setCompte_rendu(String compte_rendu) {
         this.compte_rendu = compte_rendu;
     }
+
+
+    public boolean creerExamen(String id_dmr, String Date, String Path) {
+        // Validation des champs obligatoires
+        if (id_dmr == null || id_dmr.isBlank()
+                || Date == null || Date.isBlank()
+                || Path == null || Path.isBlank()) {
+            System.out.println("Tous les champs obligatoires doivent être remplis.");
+            return false;
+        }
+        
+        
+        
+
+       
+        
+
+         // Compléter avec secondes et microsecondes
+        
+
+        // Insérer le nouveau DMR
+        String requeteInsertExamen = "INSERT INTO EXAMEN (ID_DMR, DATE_EXAMEN, IMAGE_PATH,COMPTE_RENDU) "
+                + "VALUES (" + id_dmr +",TO_TIMESTAMP('"+Date+  "','YYYY-MM-DD HH24:MI'),'" + Path+"',NULL)";
+        String req = "INSERT INTO EXAMEN";   
+                
+        
+        System.out.println("INSERT INTO EXAMEN (ID_DMR, DATE_EXAMEN, IMAGE_PATH,COMPTE_RENDU) "
+                + "VALUES (" + id_dmr +",TO_TIMESTAMP('"+Date+  "','YYYY-MM-DD HH24:MI'),'" + Path+"')");
+        
+
+        // Exécuter la requête d'insertion
+        boolean insertionReussie = ConnexionDataBase.sqlUpdate("INSERT INTO EXAMEN (ID_DMR, DATE_EXAMEN, IMAGE_PATH,COMPTE_RENDU) "
+                + "VALUES (" + id_dmr +",TO_TIMESTAMP('"+Date+  "','YYYY-MM-DD HH24:MI'),'" + Path+"',NULL)");
+
+        if (insertionReussie) {
+            System.out.println("Examen créé avec succès.");
+            return true;
+        } else {
+            System.out.println("Échec de la création du DMR.");
+            return false;
+        }
+    }
+
+
     
 public List<Examen> recupererExamen(String idDMR, String dateExamen) {
     List<Examen> examens = new ArrayList<>();
@@ -112,4 +157,5 @@ public List<Examen> recupererExamen(String idDMR, String dateExamen) {
     
     
     
+
 }
