@@ -17,6 +17,8 @@ module SIS1 {
 
     opens ui to javafx.graphics , javafx.fxml;
     
+
+    opens fc to javafx.base; // Ouvre le package fc à javafx.base
     exports ui;  // Si ton code UI est dans ce package
     
 }

@@ -81,7 +81,8 @@ public class RadiologuePageController {
             return row;
         });
     }
-
+    
+    @FXML
     private void rechercherExamens() {
         String idDMR = textFieldDMR.getText();
         if (idDMR == null || idDMR.isBlank()) {
@@ -95,11 +96,12 @@ public class RadiologuePageController {
         examensList.addAll(resultats.get("SansCompteRendu"));
         examensList.addAll(resultats.get("AvecCompteRendu"));
     }
-
+    @FXML
     private void ouvrirPageExamen(Examen examen) {
         //new pageExamen(examen).show();
     }
-
+    
+    @FXML
     private void showAlert(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(title);
